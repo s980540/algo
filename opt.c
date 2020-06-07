@@ -2,6 +2,7 @@
 
 const struct _opt func_opt[] = {
         {"help",        MENU_OPT_HELP,                  '-', "Display this summary"},
+        {"rf",          ALGO_TEST_READ_FILE,            '-', "Test reading a bin file"},
         {"strmatch",    ALG_TEST_STRING_MATCH,          '-', "Demo & test the functionality of string_match"},
         {"ll",          ALG_TEST_LIST,                  '-', "Demo & test the functionality of Doubly linked-list"},
         {"trd",         TEST_READ_DISK,                 '-', "Demo & test the functionality of winapi readfile"},
@@ -57,7 +58,7 @@ const struct _opt var_opt[] = {
         {"s",           SET_SECTOR_COUNT,               'v', "SET_SECTOR_COUNT"},
         {"d",           SET_PHYDRIVE,                   'v', "SET_PHYDRIVE"},
         {"p",           SET_PARTITION_ENTRY_NUM,        'v', "SET_PARTITION_ENTRY_NUM"},
-        {"b",           SET_EXTENDED_PAR,                   'v', "SET_EXTENDED_PAR"},
+        {"b",           SET_EXTENDED_PAR,               'v', "SET_EXTENDED_PAR"},
         {NULL}
 };
 #endif

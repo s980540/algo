@@ -6,6 +6,7 @@
 #include "gpt.h"
 #include "fat.h"
 #include "evp.h"
+#include "file.h"
 
 int main(int argc, char *argv[])
 {
@@ -27,6 +28,9 @@ int main(int argc, char *argv[])
                         case MENU_OPT_HELP:
                                 opt_help(func_opt);
                                 //opt_help(var_opt);
+                                break;
+                        case ALGO_TEST_READ_FILE:
+                                read_file_test();
                                 break;
                         case ALG_TEST_STRING_MATCH:
                                 test_string_match();

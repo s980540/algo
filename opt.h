@@ -22,6 +22,7 @@ enum _menu_opt_code_t {
         MENU_OPT_ERR = -1,
         MENU_OPT_EOF = 0,
         MENU_OPT_HELP = 1,
+        ALGO_TEST_READ_FILE,
         /* algorithm related functions */
         ALG_TEST_STRING_MATCH,
         ALG_TEST_SLL,
