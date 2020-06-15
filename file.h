@@ -14,6 +14,6 @@ int file_close(ALGO_FILE *fp);
 long file_get_bin_size(FILE *fp);
 long file_get_bin_size2(const char *file_name);
 
-int file_bin_to_c_array(const char *bin_name, const char *array_name);
+int file_bin_to_array(const char *bin_name, const char *array_name);
 
 #endif  /* ~ __FILE_H__ */
