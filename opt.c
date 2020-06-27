@@ -2,7 +2,10 @@
 
 const struct _opt func_opt[] = {
         {"help",        MENU_OPT_HELP,                  '-', "Display this summary"},
-        {"rf",          ALGO_TEST_READ_FILE,            '-', "Test reading a bin file"},
+        {"coe-to-sram", ALGO_KSOC_COE_TO_SRAM,          '-', "Convert .coe file to SRAM"},
+        {"serial",      ALGO_SERIAL_COMM_TEST,          '-', "Serial communication test"},
+        {"serial2",     ALGO_SERIAL_COMM_TEST2,         '-', "Serial communication test 2"},
+        {"rf",          ALGO_FILE_READ_TEST,            '-', "Test reading a bin file"},
         {"strmatch",    ALG_TEST_STRING_MATCH,          '-', "Demo & test the functionality of string_match"},
         {"ll",          ALG_TEST_LIST,                  '-', "Demo & test the functionality of Doubly linked-list"},
         {"trd",         TEST_READ_DISK,                 '-', "Demo & test the functionality of winapi readfile"},
@@ -185,7 +188,7 @@ void opt_get(void)
         int i;
         char *p, c;
 
-        printf("Tomato v0.01 >");
+        printf("Algo> ");
 
         for (i = 0;;) {
                 c = getchar();

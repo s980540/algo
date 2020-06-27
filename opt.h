@@ -22,7 +22,10 @@ enum _menu_opt_code_t {
         MENU_OPT_ERR = -1,
         MENU_OPT_EOF = 0,
         MENU_OPT_HELP = 1,
-        ALGO_TEST_READ_FILE,
+        ALGO_KSOC_COE_TO_SRAM,
+        ALGO_SERIAL_COMM_TEST,
+        ALGO_SERIAL_COMM_TEST2,
+        ALGO_FILE_READ_TEST,
         /* algorithm related functions */
         ALG_TEST_STRING_MATCH,
         ALG_TEST_SLL,

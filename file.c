@@ -4,8 +4,9 @@
 #include "types.h"
 #include "utility.h"
 #include "file.h"
+#include "ksoc_array_generation.h"
 
-static const char __array[51784] = {
+static const char ksoc_bin[51784] = {
         0xE8, 0xDF, 0x00, 0x20, 0xD5, 0x00, 0x00, 0x00, 0xB5, 0x18, 0x00, 0x00, 0x1D, 0x0E, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x1C, 0x00, 0x00,
@@ -3251,20 +3252,20 @@ static const char __array[51784] = {
  * "r": open text file
  * "rb": open binary file
  */
-void read_file_test(void)
+void file_read_test(void)
 {
         int ret, c;
         long i, bin_size, bin_size2;
         char *bin_buf;
         const char *file_name = "KKT_SOC.axf.bin";
         FILE *fp = NULL;
-        ALGO_FILE algo_fp = {.file = NULL, .file_name = NULL};
+        ALGO_FILE af = {.fp = NULL, .file_name = NULL};
 
-        printf("read_file_test\n");
+        printf("file_read_test\n");
         printf("sizeof(int): %d, sizeof(long): %d\n", sizeof(int), sizeof(long));
 
-        file_open(&algo_fp, file_name, "rb");
-        fp = algo_fp.file;
+        file_open(&af, file_name, "rb");
+        fp = af.fp;
 
         // calculate file size
         bin_size = file_get_bin_size(fp);
@@ -3286,7 +3287,7 @@ void read_file_test(void)
                 bin_buf[i] = (char)c;
         }
 
-        if (memcmp(bin_buf, __array, bin_size2)) {
+        if (memcmp(bin_buf, ksoc_bin, bin_size2)) {
                 printf("bin file compare failed\n");
         } else {
                 printf("bin file compare passed\n");
@@ -3299,103 +3300,45 @@ void read_file_test(void)
 
         // close the file
         free(bin_buf);
-        file_close(&algo_fp);
+        file_close(&af);
 
         // output a new file base on the file content
-        file_bin_to_array(file_name, "__array");
+        ksoc_bin_to_array(file_name, "ksoc_bin");
 }
 
-int file_open(ALGO_FILE *afp, const char *name, const char *mode)
+int file_open(ALGO_FILE *af, const char *name, const char *mode)
 {
-        afp->file = fopen(name, mode);
-        if (afp->file == NULL) {
+        af->fp = fopen(name, mode);
+        if (af->fp == NULL) {
                 printf("fopen %s failed\n", name);
                 return -1;
         } else {
                 int len = (int)strlen(name) + 1;
                 char *sname = malloc(len);
                 memcpy(sname, name, len);
-                afp->file_name = sname;
-                printf("fopen %s\n", afp->file_name);
+                af->file_name = sname;
+                printf("fopen %s\n", af->file_name);
                 return 0;
         }
 }
 
-int file_close(ALGO_FILE *afp)
+int file_close(ALGO_FILE *af)
 {
         int ret;
-        ret = fclose(afp->file);
+
+        ret = fclose(af->fp);
         if (ret == EOF) {
-                ret = ferror(afp->file);
-                printf("fclose %s failed (ferror %d)\n", afp->file_name, ret);
-                free(afp->file_name);
+                ret = ferror(af->fp);
+                printf("fclose %s failed (ferror %d)\n", af->file_name, ret);
+                free(af->file_name);
                 return -1;
         } else {
-                printf("fclose %s\n", afp->file_name);
-                free(afp->file_name);
-                afp->file = NULL;
+                printf("fclose %s\n", af->file_name);
+                free(af->file_name);
+                af->fp = NULL;
         }
 
         return 0;
-}
-
-int file_bin_to_array(const char *bin_name, const char *array_name)
-{
-        int i, c, bin_size, err, ret = -1;
-        ALGO_FILE bin_afp = {.file = NULL, .file_name = NULL};
-        ALGO_FILE text_afp = {.file = NULL, .file_name = NULL};
-        FILE *bfp, *tfp;
-
-        if (file_open(&bin_afp, bin_name, "rb")) {
-                goto exit;
-        }
-
-        if (file_open(&text_afp, array_name, "w")) {
-                goto exit;
-        }
-
-        bfp = bin_afp.file;
-        tfp = text_afp.file;
-        fseek(bfp, 0, SEEK_SET);
-        fseek(tfp, 0, SEEK_SET);
-        bin_size = file_get_bin_size(bfp);
-        fprintf(tfp, "#define %s\n", array_name, bin_size);
-        fprintf(tfp, "static const char %s[%d] = {\n", array_name, bin_size);
-        for (i = 0; i < bin_size; i++) {
-                c = fgetc(bfp);
-                if (c == EOF) {
-                        err = ferror(bfp);
-                        printf("fgetc %s failed (ferror: %d)\n", bin_afp.file_name, err);
-                        goto exit;
-                }
-                if ((i % 16) == 0) {
-                        fprintf(tfp, "        ");
-                }
-                fprintf(tfp, "0x%02X", c);
-                if ((i + 1) != bin_size) {
-                        fprintf(tfp, ",");
-                } else {
-                        fprintf(tfp, "\n");
-                        break;
-                }
-                if (((i + 1) % 16) != 0) {
-                        fprintf(tfp, " ");   
-                } else {
-                        fprintf(tfp, "\n");
-                }
-        }
-        fprintf(tfp, "};\n");
-
-exit:
-        if (bin_afp.file) {
-                file_close(&bin_afp);
-        }
-
-        if (text_afp.file) {
-                file_close(&text_afp);
-        }
-
-        return ret;
 }
 
 /*

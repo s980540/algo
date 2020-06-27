@@ -7,6 +7,8 @@
 #include "fat.h"
 #include "evp.h"
 #include "file.h"
+#include "serial.h"
+#include "ksoc_array_generation.h"
 
 int main(int argc, char *argv[])
 {
@@ -29,8 +31,17 @@ int main(int argc, char *argv[])
                                 opt_help(func_opt);
                                 //opt_help(var_opt);
                                 break;
-                        case ALGO_TEST_READ_FILE:
-                                read_file_test();
+                        case ALGO_KSOC_COE_TO_SRAM:
+                                ksoc_coe_to_sram();
+                                break;
+                        case ALGO_SERIAL_COMM_TEST:
+                                serial_communication_test();
+                                break;
+                        case ALGO_SERIAL_COMM_TEST2:
+                                serial_communication_test2();
+                                break;
+                        case ALGO_FILE_READ_TEST:
+                                file_read_test();
                                 break;
                         case ALG_TEST_STRING_MATCH:
                                 test_string_match();

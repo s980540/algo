@@ -86,6 +86,32 @@ unsigned char is_str_to_hex_valid(const char *str)
         return true;
 }
 
+unsigned int str_to_hex2(char *str, int len, int endianess)
+{
+        int i;
+        unsigned int ch, hex;
+
+        for (i = 0, hex = 0; i < len; i++) {
+                if (endianess == BIG_ENDIAN) {
+                        ch = str[i];
+                } else {
+                        ch = str[(len - i) - 1];
+                }
+
+                if (ch >= '0' && ch <= '9') {
+                        hex = (hex << 4) + (ch - '0');
+                } else if (ch >= 'A' && ch <= 'Z') {
+                        hex = (hex << 4) + (ch - 'A');
+                } else if (ch >= 'a' && ch <= 'z') {
+                        hex = (hex << 4) + (ch - 'a');
+                } else {
+                        return 0;
+                }
+        }
+
+        return hex;
+}
+
 u64 *str_to_hex(const char *str)
 {
         static u64 val;
@@ -101,11 +127,11 @@ u64 *str_to_hex(const char *str)
                 ch = str[i];
 
                 if (ch >= '0' && ch <= '9')
-                        temp = ch - 48;
+                        temp = ch - '0';
                 else if (ch >= 'A' && ch <= 'F')
-                        temp = ch - 55;
+                        temp = ch - 'A';
                 else if (ch >= 'a' && ch <= 'f')
-                        temp = ch - 87;
+                        temp = ch - 'a';
                 
                 val = (val << 4) + temp;
         }

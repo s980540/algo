@@ -93,6 +93,9 @@ static inline void __printd_cond(int cond, char *format, ...)
     (cond); \
 })
 
+#define LITTLE_ENDIAN           (0)
+#define BIG_ENDIAN              (1)
+
 struct _disk_access
 {
         u32 lba;
@@ -109,6 +112,7 @@ void __safe_free(void **p);
 int strlen_of(const char *str);
 void print_ch(char ch, int count);
 u64 *str_to_hex(const char *str);
+unsigned int str_to_hex2(char *str, int len, int endianess);
 /*void print_cond(int cond, char *format, ...);*/
 
 /* disk related operation */
