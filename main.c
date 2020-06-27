@@ -7,8 +7,8 @@
 #include "fat.h"
 #include "evp.h"
 #include "file.h"
+#include "file_ksoc_array_generation.h"
 #include "serial.h"
-#include "ksoc_array_generation.h"
 
 int main(int argc, char *argv[])
 {
@@ -40,8 +40,8 @@ int main(int argc, char *argv[])
                         case ALGO_SERIAL_COMM_TEST2:
                                 serial_communication_test2();
                                 break;
-                        case ALGO_FILE_READ_TEST:
-                                file_read_test();
+                        case ALGO_KSOC_BIN_TO_ARRAY:
+                                ksoc_bin_to_c_array();
                                 break;
                         case ALG_TEST_STRING_MATCH:
                                 test_string_match();

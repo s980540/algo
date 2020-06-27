@@ -7,7 +7,6 @@ typedef struct _ALGO_FILE
         char *file_name;
 } ALGO_FILE, *PALGO_FILE;
 
-void file_read_test(void);
 int file_open(ALGO_FILE *afp, const char *name, const char *mode);
 int file_close(ALGO_FILE *afp);
 

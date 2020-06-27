@@ -15,7 +15,7 @@ typedef signed char s8;
 typedef signed short s16;
 typedef signed int s32;
 typedef signed long long s64;
-typedef unsigned char bool;
+typedef unsigned char  bool;
 
 /**
  *linux/include/linux/types.h 

@@ -25,7 +25,7 @@ enum _menu_opt_code_t {
         ALGO_KSOC_COE_TO_SRAM,
         ALGO_SERIAL_COMM_TEST,
         ALGO_SERIAL_COMM_TEST2,
-        ALGO_FILE_READ_TEST,
+        ALGO_KSOC_BIN_TO_ARRAY,
         /* algorithm related functions */
         ALG_TEST_STRING_MATCH,
         ALG_TEST_SLL,

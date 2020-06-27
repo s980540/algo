@@ -1,5 +1,5 @@
-#ifndef __KSOC_ARRAY_GENERATION_H__
-#define __KSOC_ARRAY_GENERATION_H__
+#ifndef __FILE_KSOC_ARRAY_GENERATION_H__
+#define __FILE_KSOC_ARRAY_GENERATION_H__
 
 typedef struct _AI_WEIGHT_SRAM_DESCRIPTOR {
         char *array_name_string;
@@ -20,9 +20,7 @@ typedef struct _SRAM_FILE_DESCRIPTOR {
 #define COE_FILE_NUM            (8)
 #define GROUP_PER_COE_FILE      (3)
 
-unsigned int str_to_hex2(char *str, int len, int endianess);
+void ksoc_bin_to_c_array(void);
 int ksoc_coe_to_sram(void);
-int ksoc_bin_to_array(const char *bin_name, const char *array_name);
 
-
-#endif  /* ~ __KSOC_ARRAY_GENERATION_H__ */
+#endif  /* ~ __FILE_KSOC_ARRAY_GENERATION_H__ */

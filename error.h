@@ -1,5 +1,18 @@
-#ifndef _ERROR_H
-#define _ERROR_H
+#ifndef __ERROR_H__
+#define __ERROR_H__
+
+#define E_UNKNOWN       (1)
+#define E_INVALID_ARG   (2)
+#define E_BUSY          (3)
+#define E_SYSTEM        (4)
+
+typedef enum _ALGO_ERROR {
+        ALGO_SUCCESS            = 0,
+        ALGO_UNKNOWN_ERROR      = -E_UNKNOWN,
+        ALGO_INVALID_ARGUMENT   = -E_INVALID_ARG,
+        ALGO_BUSY               = -E_BUSY,
+        ALGO_SYSTEM_ERROR       = -E_SYSTEM,
+}ALGO_ERROR;
 
 #if 0
 enum _error_t
@@ -44,4 +57,4 @@ enum _error_t
             }                                                                                       \
     } while(0)
 
-#endif
+#endif  /* ~ __ERROR_H__ */

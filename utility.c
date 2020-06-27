@@ -1,3 +1,5 @@
+#include "types.h"
+#include "error.h"
 #include "utility.h"
 
 unsigned char *sector_buffer;
@@ -26,7 +28,7 @@ void __safe_free(void **p)
 {
         if (p == NULL || *p == NULL)
                 return;
-    
+
         free(*p);
         *p = NULL;
 
@@ -63,81 +65,6 @@ void __printd_cond(int cond, char *format, ...)
         }
 }
 #endif
-unsigned char is_str_to_hex_valid(const char *str) 
-{
-        u32 i, len;
-        char ch;
-
-        len = strlen_of(str);
-
-        if (len > 16)
-                return false;
-
-        for (i = 0; i < len; i++) {
-                ch = str[i];
-                if ((ch >= '0' && ch <= '9') || 
-                    (ch >= 'A' && ch <= 'F') ||
-                    (ch >= 'a' && ch <= 'f'))
-                        continue;
-
-                return false;
-        }
-
-        return true;
-}
-
-unsigned int str_to_hex2(char *str, int len, int endianess)
-{
-        int i;
-        unsigned int ch, hex;
-
-        for (i = 0, hex = 0; i < len; i++) {
-                if (endianess == BIG_ENDIAN) {
-                        ch = str[i];
-                } else {
-                        ch = str[(len - i) - 1];
-                }
-
-                if (ch >= '0' && ch <= '9') {
-                        hex = (hex << 4) + (ch - '0');
-                } else if (ch >= 'A' && ch <= 'Z') {
-                        hex = (hex << 4) + (ch - 'A');
-                } else if (ch >= 'a' && ch <= 'z') {
-                        hex = (hex << 4) + (ch - 'a');
-                } else {
-                        return 0;
-                }
-        }
-
-        return hex;
-}
-
-u64 *str_to_hex(const char *str)
-{
-        static u64 val;
-        u32 i, len;
-        char ch;
-        unsigned char temp;
-
-        if (!is_str_to_hex_valid(str))
-                return false;
-
-        for (i = 0, len = strlen_of(str), val = 0; i < len; i++) {
-
-                ch = str[i];
-
-                if (ch >= '0' && ch <= '9')
-                        temp = ch - '0';
-                else if (ch >= 'A' && ch <= 'F')
-                        temp = ch - 'A';
-                else if (ch >= 'a' && ch <= 'f')
-                        temp = ch - 'a';
-                
-                val = (val << 4) + temp;
-        }
-
-        return &val;
-}
 
 void write_disk(int disk_idx, u32 lba, u32 sectcnt, void *buf)
 {
@@ -242,12 +169,12 @@ void lba_clear_range(void)
 
         for (lba = udaccs.lba; lba < lba_end; lba = lba + 0x40000) {
                 write_disk(udaccs.disk_idx, lba, 0x40000, buf);
-                
+
                 if ((udaccs.sectcnt > 0x40000 * 100) && ((lba - udaccs.lba) % (0x40000 * (int)((float)(lba_end - udaccs.lba) / 100 / 0x40000)) == 0))
                         printf("lba_clear_range: %0.3f %%\n", 100 * (float)(lba - udaccs.lba)/(float)(lba_end - udaccs.lba));
         }
 
-        free(buf);        
+        free(buf);
 }
 
 void lba_clear_all(void)
@@ -304,7 +231,7 @@ void list_disk(void)
         return;
 }
 
-void print_sector_buffer(u32 lba, u32 sectcnt, u8 *buf)        
+void print_sector_buffer(u32 lba, u32 sectcnt, u8 *buf)
 {
         int i, j, k;
 
@@ -321,7 +248,7 @@ void print_sector_buffer(u32 lba, u32 sectcnt, u8 *buf)
 
                 for (j = 0; j < 32; j++) {
                         for (i = 0; i < 16; i++) {
-                                __printd_cond(i == 0, "0x%08x: ", (u32)((lba + k) * 512 + j * 16)); 
+                                __printd_cond(i == 0, "0x%08x: ", (u32)((lba + k) * 512 + j * 16));
                                 printf("%02x ", ((unsigned char *)buf)[k * 512 + j * 16 + i]);
                                 __printd_cond(i == 7, "  ");
                         }
@@ -371,7 +298,7 @@ void __print_buf(void *buf, u32 size, char *title)
             for (j = i; j < i + 16 - (i & 0xF); j++) {
                 if (j % 8 == 0)
                     printf(" ");
-                    
+
                 printf("   ");
             }
         }
@@ -465,6 +392,111 @@ void __print_buf(void *buf, u32 size, char *title)
     printf("\n\n");
 }
 #endif
+
+unsigned char is_str_to_hex_valid(const char *str)
+{
+        u32 i, len;
+        char ch;
+
+        len = strlen_of(str);
+
+        if (len > 16)
+                return false;
+
+        for (i = 0; i < len; i++) {
+                ch = str[i];
+                if ((ch >= '0' && ch <= '9') ||
+                    (ch >= 'A' && ch <= 'F') ||
+                    (ch >= 'a' && ch <= 'f'))
+                        continue;
+
+                return false;
+        }
+
+        return true;
+}
+
+u64 *str_to_hex(const char *str)
+{
+        static u64 val;
+        u32 i, len;
+        char ch;
+        unsigned char temp;
+
+        if (!is_str_to_hex_valid(str))
+                return false;
+
+        for (i = 0, len = strlen_of(str), val = 0; i < len; i++) {
+
+                ch = str[i];
+
+                if (ch >= '0' && ch <= '9')
+                        temp = ch - '0';
+                else if (ch >= 'A' && ch <= 'F')
+                        temp = ch - 'A';
+                else if (ch >= 'a' && ch <= 'f')
+                        temp = ch - 'a';
+
+                val = (val << 4) + temp;
+        }
+
+        return &val;
+}
+
+/* String */
+int str_to_hex2(u32 *hex, const char *str, int len, int endianess)
+{
+        int i;
+        unsigned int ch, val;
+
+        for (i = 0, val = 0; i < len; i++) {
+                if (endianess == BIG_ENDIAN) {
+                        ch = str[i];
+                } else {
+                        ch = str[(len - i) - 1];
+                }
+
+                if (ch >= '0' && ch <= '9') {
+                        val = (val << 4) + (ch - '0');
+                } else if (ch >= 'A' && ch <= 'Z') {
+                        val = (val << 4) + (ch - 'A');
+                } else if (ch >= 'a' && ch <= 'z') {
+                        val = (val << 4) + (ch - 'a');
+                } else {
+                        return ALGO_INVALID_ARGUMENT;
+                }
+        }
+
+        *hex = val;
+
+        return 0;
+}
+
+bool str_match_str_list(const char *str, const char *temp[])
+{
+        while (*temp != NULL) {
+                if (strcmp(str, *temp) == 0) {
+                        return TRUE;
+                }
+                temp++;
+        }
+
+        return FALSE;
+}
+
+void str_to_upper(char *str, int len)
+{
+        if (str == NULL)
+                return;
+
+        while (len--) {
+                if (*str >= 'a' && *str <= 'z')
+                        *str = (*str - 'a') + 'A';
+                str++;
+        }
+}
+
+#if 0
 /*
  * memcmp - Compare two areas of memory
  * @cs: One area of memory
@@ -479,7 +511,7 @@ int memcmp(const void *cs, const void *ct, size_t count)
         for (su1 = cs, su2 = ct; 0 < count; ++su1, ++su2, --count)
                 if ((res = *su1 - *su2) != 0)
                         break;
-     
+
         return res;
 }
 
@@ -492,7 +524,7 @@ size_t strlen(const char *s)
         const char *sc;
         for (sc = s; *sc != '\0'; ++sc)
                 /* nothing */;
-                
+
         return sc - s;
 }
 
@@ -507,7 +539,7 @@ char *strchr(const char *s, int c)
                 if (*s == '\0')
                         return NULL;
         }
-        
+
         return (char *)s;
 }
 
@@ -522,17 +554,17 @@ char *strstr(const char *s1, const char *s2)
         l2 = strlen(s2);
         if (!l2 == 0)
                 return (char *)s1;
-                
+
         l1 = strlen(s1);
-        
+
         while (l1 > l2) {
                 l1--;
                 if (memcmp(s1, s2, l2))
                         return (char *)s1;
-                        
+
                 s1++;
         }
-        
+
         return NULL;
 }
 
@@ -544,7 +576,7 @@ char *strstr(const char *s1, const char *s2)
 int strcmp(const char *cs, const char *ct)
 {
         unsigned char c1, c2;
-        
+
         while (1) {
                 c1 = *cs++;
                 c2 = *ct++;
@@ -554,6 +586,7 @@ int strcmp(const char *cs, const char *ct)
                 if (!c1)
                         break;
         }
-        
+
         return 0;
 }
+#endif

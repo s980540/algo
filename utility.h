@@ -112,7 +112,6 @@ void __safe_free(void **p);
 int strlen_of(const char *str);
 void print_ch(char ch, int count);
 u64 *str_to_hex(const char *str);
-unsigned int str_to_hex2(char *str, int len, int endianess);
 /*void print_cond(int cond, char *format, ...);*/
 
 /* disk related operation */
@@ -135,4 +134,10 @@ extern const char *disk_prefix;
 extern struct _disk_access udaccs;
 extern struct _disk_access gdaccs;
 extern void __print_buf(void *buf, u32 size, char *title);
+
+/* String */
+int str_to_hex2(u32 *hex, const char *str, int len, int endianess);
+bool str_match_str_list(const char *str, const char *temp[]);
+void str_to_upper(char *str, int len);
+
 #endif

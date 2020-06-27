@@ -1,11 +1,11 @@
 #include "opt.h"
 
 const struct _opt func_opt[] = {
-        {"help",        MENU_OPT_HELP,                  '-', "Display this summary"},
-        {"coe-to-sram", ALGO_KSOC_COE_TO_SRAM,          '-', "Convert .coe file to SRAM"},
-        {"serial",      ALGO_SERIAL_COMM_TEST,          '-', "Serial communication test"},
-        {"serial2",     ALGO_SERIAL_COMM_TEST2,         '-', "Serial communication test 2"},
-        {"rf",          ALGO_FILE_READ_TEST,            '-', "Test reading a bin file"},
+        {"help",                MENU_OPT_HELP,                  '-', "Display this summary"},
+        {"ksoc-coe-to-sram",    ALGO_KSOC_COE_TO_SRAM,          '-', "Convert .coe file to .c file (const char array)"},
+        {"serial",              ALGO_SERIAL_COMM_TEST,          '-', "Serial communication test"},
+        {"serial2",             ALGO_SERIAL_COMM_TEST2,         '-', "Serial communication test 2"},
+        {"ksoc-bin-to-array",   ALGO_KSOC_BIN_TO_ARRAY,         '-', "Convert a bin file to a file (const char array)"},
         {"strmatch",    ALG_TEST_STRING_MATCH,          '-', "Demo & test the functionality of string_match"},
         {"ll",          ALG_TEST_LIST,                  '-', "Demo & test the functionality of Doubly linked-list"},
         {"trd",         TEST_READ_DISK,                 '-', "Demo & test the functionality of winapi readfile"},
