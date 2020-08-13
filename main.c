@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
         char *prog_name = NULL;
         int opt_code = MENU_OPT_EOF;
         char *file_name;
+        int ret;
         bool enable_debug_verbose = false;
 
         init_sect_buffer();
@@ -47,7 +48,9 @@ int main(int argc, char *argv[])
                                 break;
                         case ALGO_KSOC_IO_SCRIPT_TO_FILE:
                                 file_name = opt_get_arg();
-                                ksoc_io_script_parser(file_name, enable_debug_verbose);
+                                ret = ksoc_io_script_parser(file_name, enable_debug_verbose);
+                                if (ret)
+                                        printf("ksoc_io_script_parser failed (ret %d)\n", ret);
                                 enable_debug_verbose = false;
                                 break;
                         case ALGO_DEBUG_VERBOSE:

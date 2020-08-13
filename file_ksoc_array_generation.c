@@ -3334,8 +3334,8 @@ static const AI_WEIGHT_SRAM_DESCRIPTOR ai_weight_sram_descriptor[COE_FILE_NUM * 
         {"K_AIWloc_L3_G2", "AIW_L_RAM_GROUP_ARR_SIZE", "AI_WEIGHT_FLASH_BASE", "AI_Wloc_L3_G2_OFFSET"},
 };
 
-#define STR_SIZE        (256)
-char str[STR_SIZE];
+#define STRING_BUF_SIZE        (256)
+char str[STRING_BUF_SIZE];
 
 /*
  * Remark
@@ -3541,7 +3541,7 @@ static int file_coe_to_sram(int coe_file_index, ALGO_FILE *coe_file, ALGO_FILE *
         sram[2] = (unsigned int *)malloc(sizeof(unsigned int) * line_num);
 
         l = 0;
-        while (fgets(str, STR_SIZE, coe_file->fp) != NULL) {
+        while (fgets(str, STRING_BUF_SIZE, coe_file->fp) != NULL) {
                 loc = strchr(str, '\n');
                 *loc = '\0';
 
@@ -3599,7 +3599,7 @@ static long file_coe_get_line_num(ALGO_FILE *af)
         // Backup the current location of file position indicator
         pos = ftell(af->fp);
 
-        while (fgets(str, STR_SIZE, af->fp) != NULL) {
+        while (fgets(str, STRING_BUF_SIZE, af->fp) != NULL) {
                 // Remove trailing '\n'
                 loc = strchr(str, '\n');
                 *loc = '\0';
@@ -3614,64 +3614,92 @@ static long file_coe_get_line_num(ALGO_FILE *af)
         return i;
 }
 
-void ksoc_io_script_parser(const char *file_name, const bool enable_debug_verbose)
+static long file_get_line_num(FILE *fp)
 {
-        int i, ret = E_UNKNOWN, ferr;
+        long i = 0, pos;
+
+        // Backup the current location of file position indicator
+        pos = ftell(fp);
+
+        while (fgets(str, STRING_BUF_SIZE, fp) != NULL) {
+                i++;
+        }
+        // Restore the location of file position indicator
+        fseek(fp, pos, SEEK_SET);
+
+        return i;
+}
+
+int ksoc_io_script_parser(const char *in_file_name, const bool verbose)
+{
+        int ret = ALGO_UNKNOWN_ERROR;
         char *out_file_name = NULL;
 
-        int l, g;
-        long line_num;
-        unsigned int len;
-        char *loc;
-        unsigned int *sram[GROUP_PER_COE_FILE];
+        int l, line_num;
+        char *sp;
 
-        ALGO_FILE in_file = {.fp = NULL, .file_name = NULL};
-        ALGO_FILE out_file = {.fp = NULL, .file_name = NULL};
+        FILE *in_file_fp = NULL, *out_file_fp = NULL;
 
-        if (file_open(&in_file, file_name, "r")) {
-                goto exit;
-        }
+	// Open input file 
+        in_file_fp = fopen(in_file_name, "r");
+        if (in_file_fp == NULL) {
+		ret = ALGO_ERROR_OPEN_FILE;
+		goto exit;
+	}
+	printf("in_file_name: %s\n", in_file_name);
 
-        line_num = file_coe_get_line_num(&in_file);
-        printf("in_file_name: %s\n", file_name);
+	// Restore the location of file position indicator
+	// Get line number of input file
+	fseek(in_file_fp, 0, SEEK_SET);
+        line_num = file_get_line_num(in_file_fp);
 
-        out_file_name = (char *)malloc(strlen(file_name) + 3);
-        sprintf(out_file_name, "__%s", file_name);
-        if (file_open(&out_file, out_file_name, "w")) {
-                goto exit;
-        }
+	// Open output file
+        out_file_name = (char *)malloc(strlen(in_file_name) + 3);
+        sprintf(out_file_name, "__%s", in_file_name);
+	out_file_fp = fopen(out_file_name, "w");
+	if (out_file_fp == NULL) {
+		ret = ALGO_ERROR_OPEN_FILE;
+		goto exit;
+	}
+        printf("out_file_name: %s\n", out_file_name);
 
-        printf("out_file_name: %s\n", file_name);
+	// Start to parse the file
+	for (l = 0; l < line_num; l++) {
+		if (fgets(str, STRING_BUF_SIZE, in_file_fp) == NULL) {
+			ret = ALGO_ERROR_READ_FILE;
+			goto exit;
+		}
 
-        l = 0;
-        while (fgets(str, STR_SIZE, in_file.fp) != NULL) {
-                // find a space character
-                loc = strchr(str, ' ');
-                if ((l < 45)
-                || ((loc > str) && (loc[-1] == '0'))) {
-                        if (enable_debug_verbose)
+		// Skip the first 45 lines
+		if (l < 45)
+			continue;
+
+                // find the first space character
+                sp = strchr(str, ' ');
+
+                if ((sp > str) && (sp[-1] == '0')) {
+                        if (verbose)
                                 printf("\rWrite %s %7.3f %%:  ", out_file_name, ((float)l / (float)line_num) * 100);
 
-                        if (enable_debug_verbose)
+                        if (verbose)
                                 printf("%s", str);
 
-                        fprintf(out_file.fp, "%s", str);
+                        fprintf(out_file_fp, "%s", str);
                 }
-                l++;
         }
-        if (enable_debug_verbose)
+        if (verbose)
                 printf("\rWrite %s %7.3f %%\n", out_file_name, ((float)l / (float)line_num) * 100);
 
+	ret = ALGO_SUCCESS;
 exit:
         if (out_file_name != NULL)
                 free(out_file_name);
 
-        if (in_file.fp) {
-                file_close(&in_file);
-        }
+        if (in_file_fp)
+		fclose(in_file_fp);
 
-        if (out_file.fp) {
-                file_close(&out_file);
-        }
-        return;
+        if (out_file_fp)
+		fclose(out_file_fp);
+
+        return ret;
 }
