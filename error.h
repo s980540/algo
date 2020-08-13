@@ -5,6 +5,9 @@
 #define E_INVALID_ARG   (2)
 #define E_BUSY          (3)
 #define E_SYSTEM        (4)
+#define E_OPEN_FILE     (5)
+#define E_READ_FILE     (6)
+#define E_WRITE_FILE    (7)
 
 typedef enum _ALGO_ERROR {
         ALGO_SUCCESS            = 0,
@@ -12,6 +15,11 @@ typedef enum _ALGO_ERROR {
         ALGO_INVALID_ARGUMENT   = -E_INVALID_ARG,
         ALGO_BUSY               = -E_BUSY,
         ALGO_SYSTEM_ERROR       = -E_SYSTEM,
+        ALGO_ERROR_OPEN_FILE    = -E_OPEN_FILE,
+        ALGO_ERROR_READ_FILE    = -E_READ_FILE,
+        ALGO_ERROR_WRITE_FILE   = -E_WRITE_FILE,
+
+        ALGO_ERRO_COUNT
 }ALGO_ERROR;
 
 #if 0
