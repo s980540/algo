@@ -14,6 +14,8 @@ int main(int argc, char *argv[])
 {
         char *prog_name = NULL;
         int opt_code = MENU_OPT_EOF;
+        char *file_name;
+        bool enable_debug_verbose = false;
 
         init_sect_buffer();
 
@@ -43,6 +45,15 @@ int main(int argc, char *argv[])
                         case ALGO_KSOC_BIN_TO_ARRAY:
                                 ksoc_bin_to_c_array();
                                 break;
+                        case ALGO_KSOC_IO_SCRIPT_TO_FILE:
+                                file_name = opt_get_arg();
+                                ksoc_io_script_parser(file_name, enable_debug_verbose);
+                                enable_debug_verbose = false;
+                                break;
+                        case ALGO_DEBUG_VERBOSE:
+                                enable_debug_verbose = true;
+                                break;
+                #if 0
                         case ALG_TEST_STRING_MATCH:
                                 test_string_match();
                                 break;
@@ -74,25 +85,25 @@ int main(int argc, char *argv[])
                                 __fat_write_volume(udaccs.lba, udaccs.sectcnt, sector_buffer, fat_volume_dst);
                                 break;
                         case SET_LBA:
-                                udaccs.lba = get_arg(u32);
+                                udaccs.lba = GET_ARGUMENT(u32);
                             #ifdef OPT_DEBUG_CONFIG
                                 printf("lba: %#x\n", udaccs.lba);
                             #endif
                                 break;
                         case SET_CLUSTER:
-                                udaccs.cluster = get_arg(u32);
+                                udaccs.cluster = GET_ARGUMENT(u32);
                             #ifdef OPT_DEBUG_CONFIG
                                 printf("cluster: %#x\n");
                             #endif
                                 break;
                         case SET_SECTOR_COUNT:
-                                udaccs.sectcnt = get_arg(u64);
+                                udaccs.sectcnt = GET_ARGUMENT(u64);
                             #ifdef OPT_DEBUG_CONFIG
                                 printf("sectcnt: %#x\n", udaccs.sectcnt);
                             #endif
                                 break;
                         case SET_PHYDRIVE:
-                                udaccs.disk_idx = get_arg(int); 
+                                udaccs.disk_idx = GET_ARGUMENT(int); 
                             #ifdef OPT_DEBUG_CONFIG
                                 printf("disk_idx: %#x\n", udaccs.disk_idx);
                             #endif
@@ -118,13 +129,13 @@ int main(int argc, char *argv[])
                                 break;
                         }
                         case SET_PARTITION_ENTRY_NUM:
-                                udaccs.par_entry_idx = get_arg(unsigned char);
+                                udaccs.par_entry_idx = GET_ARGUMENT(unsigned char);
                             #ifdef OPT_DEBUG_CONFIG
                                 printf("par_entry_idx: %#x\n", udaccs.par_entry_idx);
                             #endif
                                 break;
                         case SET_EXTENDED_PAR:
-                                udaccs.epar = get_arg(u32);
+                                udaccs.epar = GET_ARGUMENT(u32);
                             #ifdef OPT_DEBUG_CONFIG
                                 printf("base: %#x\n", udaccs.epar);
                             #endif
@@ -227,6 +238,7 @@ int main(int argc, char *argv[])
                         case AES_TEST:
                                 aes_test();
                                 break;
+                #endif
                         case PAUSE:
                                 system("pause");
                                 printf("\n");

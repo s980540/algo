@@ -3334,7 +3334,7 @@ static const AI_WEIGHT_SRAM_DESCRIPTOR ai_weight_sram_descriptor[COE_FILE_NUM * 
         {"K_AIWloc_L3_G2", "AIW_L_RAM_GROUP_ARR_SIZE", "AI_WEIGHT_FLASH_BASE", "AI_Wloc_L3_G2_OFFSET"},
 };
 
-#define STR_SIZE        (100)
+#define STR_SIZE        (256)
 char str[STR_SIZE];
 
 /*
@@ -3532,8 +3532,10 @@ static int file_coe_to_sram(int coe_file_index, ALGO_FILE *coe_file, ALGO_FILE *
 
         fseek(coe_file->fp, 0, SEEK_SET);
         fseek(sram_file->fp, 0, SEEK_SET);
+
         line_num = file_coe_get_line_num(coe_file);
         printf("coe: %s sram: %s line: %d\n", coe_file->file_name, sram_file->file_name, line_num);
+
         sram[0] = (unsigned int *)malloc(sizeof(unsigned int) * line_num);
         sram[1] = (unsigned int *)malloc(sizeof(unsigned int) * line_num);
         sram[2] = (unsigned int *)malloc(sizeof(unsigned int) * line_num);
@@ -3610,4 +3612,66 @@ static long file_coe_get_line_num(ALGO_FILE *af)
         fseek(af->fp, pos, SEEK_SET);
 
         return i;
+}
+
+void ksoc_io_script_parser(const char *file_name, const bool enable_debug_verbose)
+{
+        int i, ret = E_UNKNOWN, ferr;
+        char *out_file_name = NULL;
+
+        int l, g;
+        long line_num;
+        unsigned int len;
+        char *loc;
+        unsigned int *sram[GROUP_PER_COE_FILE];
+
+        ALGO_FILE in_file = {.fp = NULL, .file_name = NULL};
+        ALGO_FILE out_file = {.fp = NULL, .file_name = NULL};
+
+        if (file_open(&in_file, file_name, "r")) {
+                goto exit;
+        }
+
+        line_num = file_coe_get_line_num(&in_file);
+        printf("in_file_name: %s\n", file_name);
+
+        out_file_name = (char *)malloc(strlen(file_name) + 3);
+        sprintf(out_file_name, "__%s", file_name);
+        if (file_open(&out_file, out_file_name, "w")) {
+                goto exit;
+        }
+
+        printf("out_file_name: %s\n", file_name);
+
+        l = 0;
+        while (fgets(str, STR_SIZE, in_file.fp) != NULL) {
+                // find a space character
+                loc = strchr(str, ' ');
+                if ((l < 45)
+                || ((loc > str) && (loc[-1] == '0'))) {
+                        if (enable_debug_verbose)
+                                printf("\rWrite %s %7.3f %%:  ", out_file_name, ((float)l / (float)line_num) * 100);
+
+                        if (enable_debug_verbose)
+                                printf("%s", str);
+
+                        fprintf(out_file.fp, "%s", str);
+                }
+                l++;
+        }
+        if (enable_debug_verbose)
+                printf("\rWrite %s %7.3f %%\n", out_file_name, ((float)l / (float)line_num) * 100);
+
+exit:
+        if (out_file_name != NULL)
+                free(out_file_name);
+
+        if (in_file.fp) {
+                file_close(&in_file);
+        }
+
+        if (out_file.fp) {
+                file_close(&out_file);
+        }
+        return;
 }

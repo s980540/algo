@@ -459,9 +459,9 @@ int str_to_hex2(u32 *hex, const char *str, int len, int endianess)
                 if (ch >= '0' && ch <= '9') {
                         val = (val << 4) + (ch - '0');
                 } else if (ch >= 'A' && ch <= 'Z') {
-                        val = (val << 4) + (ch - 'A');
+                        val = (val << 4) + (ch - 'A' + 10);
                 } else if (ch >= 'a' && ch <= 'z') {
-                        val = (val << 4) + (ch - 'a');
+                        val = (val << 4) + (ch - 'a' + 10);
                 } else {
                         return ALGO_INVALID_ARGUMENT;
                 }

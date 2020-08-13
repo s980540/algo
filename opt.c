@@ -6,6 +6,9 @@ const struct _opt func_opt[] = {
         {"serial",              ALGO_SERIAL_COMM_TEST,          '-', "Serial communication test"},
         {"serial2",             ALGO_SERIAL_COMM_TEST2,         '-', "Serial communication test 2"},
         {"ksoc-bin-to-array",   ALGO_KSOC_BIN_TO_ARRAY,         '-', "Convert a bin file to a file (const char array)"},
+        {"io-parser",           ALGO_KSOC_IO_SCRIPT_TO_FILE,    's', "Convert a I/O script to a file"},
+        {"v",                   ALGO_DEBUG_VERBOSE,             '-', "Enable verbose debug message"},
+#if 0
         {"strmatch",    ALG_TEST_STRING_MATCH,          '-', "Demo & test the functionality of string_match"},
         {"ll",          ALG_TEST_LIST,                  '-', "Demo & test the functionality of Doubly linked-list"},
         {"trd",         TEST_READ_DISK,                 '-', "Demo & test the functionality of winapi readfile"},
@@ -50,6 +53,7 @@ const struct _opt func_opt[] = {
         {"fpc",         FAT_PRINT_CLUSTER,              '-', "FAT_PRINT_CLUSTER"},
         {"frf",         FAT_READ_FSECT,                 '-', "FAT_READ_FSECT"},
         {"aes",         AES_TEST,                       '-', "AES_TEST"},
+#endif
         {"pau",         PAUSE,                          '-', "PAUSE"},
         {"e",           END_OF_PROGRAM,                 '-', "END_OF_PROGRAM"},
         
