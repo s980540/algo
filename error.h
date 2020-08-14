@@ -10,14 +10,14 @@
 #define E_WRITE_FILE    (7)
 
 typedef enum _ALGO_ERROR {
-        ALGO_SUCCESS            = 0,
-        ALGO_UNKNOWN_ERROR      = -E_UNKNOWN,
-        ALGO_INVALID_ARGUMENT   = -E_INVALID_ARG,
-        ALGO_BUSY               = -E_BUSY,
-        ALGO_SYSTEM_ERROR       = -E_SYSTEM,
-        ALGO_ERROR_OPEN_FILE    = -E_OPEN_FILE,
-        ALGO_ERROR_READ_FILE    = -E_READ_FILE,
-        ALGO_ERROR_WRITE_FILE   = -E_WRITE_FILE,
+        ALGO_SUCCESS                    = 0,
+        ALGO_ERROR_UNKNOWN              = -E_UNKNOWN,
+        ALGO_ERROR_INVALID_ARGUMENT     = -E_INVALID_ARG,
+        ALGO_ERROR_BUSY                 = -E_BUSY,
+        ALGO_ERROR_SYSTEM               = -E_SYSTEM,
+        ALGO_ERROR_OPEN_FILE            = -E_OPEN_FILE,
+        ALGO_ERROR_READ_FILE            = -E_READ_FILE,
+        ALGO_ERROR_WRITE_FILE           = -E_WRITE_FILE,
 
         ALGO_ERRO_COUNT
 }ALGO_ERROR;

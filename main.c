@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 {
         char *prog_name = NULL;
         int opt_code = MENU_OPT_EOF;
-        char *file_name;
+        const char *file_name, *version = NULL, *datetime = NULL;
         int ret;
         bool enable_debug_verbose = false;
 
@@ -52,6 +52,24 @@ int main(int argc, char *argv[])
                                 if (ret)
                                         printf("ksoc_io_script_parser failed (ret %d)\n", ret);
                                 enable_debug_verbose = false;
+                                break;
+                        case ALGO_KSOC_SET_BIN_DATETIME:
+                                datetime = opt_get_arg();
+                                printf("datetime: %s\n", datetime);
+                                break;
+                        case ALGO_KSOC_SET_BIN_VERSION:
+                                version = opt_get_arg();
+                                printf("version: %s\n", version);
+                                break;
+                        case ALGO_KSOC_SET_BIN_NAME:
+                                file_name = opt_get_arg();
+                                printf("file_name: %s\n", file_name);
+                                ret = ksoc_set_bin_name(file_name, version, datetime);
+                                if (ret)
+                                        printf("ksoc_set_bin_name failed (ret %d)\n", ret);
+                                datetime = NULL;
+                                version = NULL;
+                                file_name = NULL;
                                 break;
                         case ALGO_DEBUG_VERBOSE:
                                 enable_debug_verbose = true;

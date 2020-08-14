@@ -10,7 +10,7 @@ int file_open(ALGO_FILE *af, const char *name, const char *mode)
         af->fp = fopen(name, mode);
         if (af->fp == NULL) {
                 printf("fopen %s failed\n", name);
-                return ALGO_SYSTEM_ERROR;
+                return ALGO_ERROR_SYSTEM;
         } else {
                 int len = (int)strlen(name) + 1;
                 char *sname = malloc(len);
@@ -30,7 +30,7 @@ int file_close(ALGO_FILE *af)
                 ret = ferror(af->fp);
                 printf("fclose %s failed (ferror %d)\n", af->file_name, ret);
                 free(af->file_name);
-                return ALGO_SYSTEM_ERROR;
+                return ALGO_ERROR_SYSTEM;
         } else {
                 printf("fclose %s\n", af->file_name);
                 free(af->file_name);

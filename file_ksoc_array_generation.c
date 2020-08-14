@@ -3405,7 +3405,7 @@ void ksoc_bin_to_c_array(void)
 
 static int file_bin_to_c_array(const char *bin_name, const char *array_name)
 {
-        int i, c, bin_size, err, ret = ALGO_UNKNOWN_ERROR;
+        int i, c, bin_size, err, ret = ALGO_ERROR_UNKNOWN;
         ALGO_FILE bin_file = {.fp = NULL, .file_name = NULL};
         ALGO_FILE text_file = {.fp = NULL, .file_name = NULL};
         FILE *bfp, *tfp;
@@ -3632,7 +3632,7 @@ static long file_get_line_num(FILE *fp)
 
 int ksoc_io_script_parser(const char *in_file_name, const bool verbose)
 {
-        int ret = ALGO_UNKNOWN_ERROR;
+        int ret = ALGO_ERROR_UNKNOWN;
         char *out_file_name = NULL;
 
         int l, line_num;
@@ -3640,7 +3640,7 @@ int ksoc_io_script_parser(const char *in_file_name, const bool verbose)
 
         FILE *in_file_fp = NULL, *out_file_fp = NULL;
 
-	// Open input file 
+        // Open input file
         in_file_fp = fopen(in_file_name, "r");
         if (in_file_fp == NULL) {
 		ret = ALGO_ERROR_OPEN_FILE;
@@ -3701,5 +3701,49 @@ exit:
         if (out_file_fp)
 		fclose(out_file_fp);
 
+        return ret;
+}
+
+int ksoc_set_bin_name(const char *file_name, const char *version, const char *datetime)
+{
+        int ret;
+        char *bin_prefix = NULL, *new_file_name = NULL, *sp = NULL;
+        FILE *fp = NULL;
+        int bin_size;
+
+        if (file_name == NULL || version == NULL || datetime == NULL) {
+                return ALGO_ERROR_INVALID_ARGUMENT;
+        }
+
+        bin_prefix = (char *)malloc(strlen(file_name) + 1);
+        memcpy(bin_prefix, file_name, strlen(file_name) + 1);
+
+        // remove trailing '.bin'
+        sp = strchr(bin_prefix, '.');
+        if (sp != NULL)
+                *sp = '\0';
+
+        // replace '.' to '_' in version code
+        while ((sp = strchr(version, '.')) != NULL) {
+                *sp = '_';
+        }
+
+        new_file_name = (char *)malloc(strlen(file_name) + strlen(version) + strlen(datetime) + 3);
+        if (new_file_name == NULL) {
+                printf("malloc failed\n");
+                return ALGO_ERROR_SYSTEM;
+        }
+
+        sprintf(new_file_name, "%s_%s_%s.bin", bin_prefix, version, datetime);
+        ret = rename(file_name, new_file_name);
+        if (ret == 0) {
+                printf("rename %s to %s\n", file_name, new_file_name);
+                ret = ALGO_SUCCESS;
+        } else {
+                printf("rename %s to %s failed\n", file_name, new_file_name);
+                ret = ALGO_ERROR_UNKNOWN;
+        }
+        free(bin_prefix);
+        free(new_file_name);
         return ret;
 }

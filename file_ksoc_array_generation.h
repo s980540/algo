@@ -23,5 +23,6 @@ typedef struct _SRAM_FILE_DESCRIPTOR {
 void ksoc_bin_to_c_array(void);
 int ksoc_coe_to_sram(void);
 int ksoc_io_script_parser(const char *in_file_name, const bool verbose);
+int ksoc_set_bin_name(const char *file_name, const char *version, const char *datetime);
 
 #endif  /* ~ __FILE_KSOC_ARRAY_GENERATION_H__ */

@@ -27,6 +27,9 @@ enum _menu_opt_code_t {
         ALGO_SERIAL_COMM_TEST2,
         ALGO_KSOC_BIN_TO_ARRAY,
         ALGO_KSOC_IO_SCRIPT_TO_FILE,
+        ALGO_KSOC_SET_BIN_DATETIME,
+        ALGO_KSOC_SET_BIN_VERSION,
+        ALGO_KSOC_SET_BIN_NAME,
         ALGO_DEBUG_VERBOSE,
         /* algorithm related functions */
         ALG_TEST_STRING_MATCH,

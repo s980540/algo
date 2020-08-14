@@ -463,7 +463,7 @@ int str_to_hex2(u32 *hex, const char *str, int len, int endianess)
                 } else if (ch >= 'a' && ch <= 'z') {
                         val = (val << 4) + (ch - 'a' + 10);
                 } else {
-                        return ALGO_INVALID_ARGUMENT;
+                        return ALGO_ERROR_INVALID_ARGUMENT;
                 }
         }
 
