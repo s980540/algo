@@ -3474,7 +3474,7 @@ exit:
     return ret;
 }
 
-int ksoc_coe_to_sram(void)
+ret_code ksoc_coe_to_sram(void)
 {
     int i, ret = E_UNKNOWN, ferr;
     ALGO_FILE coe_file = {.fp = NULL, .file_name = NULL};
@@ -3637,7 +3637,7 @@ static long file_get_line_num(FILE *fp)
     return i;
 }
 
-int ksoc_io_script_parser(const char *in_file_name, const bool verbose)
+ret_code ksoc_io_script_parser(const char *in_file_name, const bool verbose)
 {
     int ret = ALGO_ERROR_UNKNOWN;
     char *out_file_name = NULL;
@@ -3714,7 +3714,7 @@ exit:
     return ret;
 }
 
-int ksoc_set_bin_name(const char *file_name, const char *version, const char *datetime)
+ret_code ksoc_set_bin_name(const char *file_name, const char *version, const char *datetime)
 {
     int ret;
     char *bin_prefix = NULL, *new_file_name = NULL, *sp = NULL;

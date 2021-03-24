@@ -17,6 +17,8 @@ typedef signed int s32;
 typedef signed long long s64;
 typedef unsigned char  bool;
 
+typedef int ret_code;
+
 /**
  *linux/include/linux/types.h 
  */

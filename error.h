@@ -57,12 +57,13 @@ enum _error_t
 };
 #endif
 
-#define __fatal_error(cond)                                                                           \
-    do {                                                                                            \
-            if (cond) {                                                                             \
-                    printf("[%s][%s][%d] FATAL ERROR.\n", __FILE__, __FUNCTION__, __LINE__);    \
-                    while(1);                                                                       \
-            }                                                                                       \
+#define __fatal_error(cond)                                 \
+    do {                                                    \
+        if (cond) {                                         \
+            printf("[%s][%s][%d] FATAL ERROR.\n",           \
+                    __FILE__, __FUNCTION__, __LINE__);      \
+            while(1);                                       \
+        }                                                   \
     } while(0)
 
 #endif  /* ~ __ERROR_H__ */

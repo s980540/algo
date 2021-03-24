@@ -5,8 +5,8 @@
 CPP      = g++.exe -mno-ms-bitfields
 CC       = gcc.exe -mno-ms-bitfields
 WINDRES  = windres.exe
-OBJ      = main.o opt.o string_match.o data_struct.o utility.o mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o
-LINKOBJ  = main.o opt.o string_match.o data_struct.o utility.o mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o
+OBJ      = main.o menu_opt.o string_match.o data_struct.o utility.o mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o
+LINKOBJ  = main.o menu_opt.o string_match.o data_struct.o utility.o mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o
 
 LIBS     = -L"C:/MinGW/lib" \
            -L"C:/MinGW/mingw32/lib" \
@@ -43,8 +43,8 @@ $(BIN): $(OBJ)
 main.o: main.c
 	$(CC) -c main.c -o main.o $(CFLAGS)
 
-opt.o: opt.c
-	$(CC) -c opt.c -o opt.o $(CFLAGS)
+menu_opt.o: menu_opt.c
+	$(CC) -c menu_opt.c -o menu_opt.o $(CFLAGS)
 
 string_match.o: string_match.c
 	$(CC) -c string_match.c -o string_match.o $(CFLAGS)
