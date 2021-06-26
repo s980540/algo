@@ -5,8 +5,8 @@
 CPP      = g++.exe -mno-ms-bitfields
 CC       = gcc.exe -mno-ms-bitfields
 WINDRES  = windres.exe
-OBJ      = main.o menu_opt.o string_match.o data_struct.o utility.o mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o
-LINKOBJ  = main.o menu_opt.o string_match.o data_struct.o utility.o mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o
+OBJ      = main.o menu.o string_match.o data_struct.o utility.o mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o
+LINKOBJ  = main.o menu.o string_match.o data_struct.o utility.o mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o
 
 LIBS     = -L"C:/MinGW/lib" \
            -L"C:/MinGW/mingw32/lib" \
@@ -28,6 +28,7 @@ BIN      = algo.exe
 CXXFLAGS = $(CXXINCS) -m32
 CFLAGS   = $(INCS) -m32
 RM       = rm.exe -f
+BFLAGS   = -g -o
 
 .PHONY: all all-before all-after clean clean-custom
 
@@ -38,40 +39,40 @@ clean: clean-custom
 	${RM} $(OBJ)
 
 $(BIN): $(OBJ)
-	$(CC) $(LINKOBJ) -o $(BIN) $(LIBS)
+	$(CC) $(LINKOBJ) $(BFLAGS) $(BIN) $(LIBS)
 
 main.o: main.c
-	$(CC) -c main.c -o main.o $(CFLAGS)
+	$(CC) -c main.c $(BFLAGS) main.o $(CFLAGS)
 
-menu_opt.o: menu_opt.c
-	$(CC) -c menu_opt.c -o menu_opt.o $(CFLAGS)
+menu.o: menu.c
+	$(CC) -c menu.c $(BFLAGS) menu.o $(CFLAGS)
 
 string_match.o: string_match.c
-	$(CC) -c string_match.c -o string_match.o $(CFLAGS)
+	$(CC) -c string_match.c $(BFLAGS) string_match.o $(CFLAGS)
 	
 data-struct.o: data_struct.c
-	$(CC) -c data-struct.c -o data_struct.o $(CFLAGS)
+	$(CC) -c data-struct.c $(BFLAGS) data_struct.o $(CFLAGS)
 	
 utility.o: utility.c
-	$(CC) -c utility.c -o utility.o $(CFLAGS)
+	$(CC) -c utility.c $(BFLAGS) utility.o $(CFLAGS)
 
 mbr.o: mbr.c
-	$(CC) -c mbr.c -o mbr.o $(CFLAGS) 
+	$(CC) -c mbr.c $(BFLAGS) mbr.o $(CFLAGS) 
 
 gpt.o: gpt.c
-	$(CC) -c gpt.c -o gpt.o $(CFLAGS)
+	$(CC) -c gpt.c $(BFLAGS) gpt.o $(CFLAGS)
 
 fat.o: fat.c
-	$(CC) -c fat.c -o fat.o $(CFLAGS)
+	$(CC) -c fat.c $(BFLAGS) fat.o $(CFLAGS)
 
 evp.o: evp.c
-	$(CC) -c evp.c -o evp.o $(CFLAGS)
+	$(CC) -c evp.c $(BFLAGS) evp.o $(CFLAGS)
 
 file.o:	file.c
-	$(CC) -c file.c -o file.o $(CFLAGS)
+	$(CC) -c file.c $(BFLAGS) file.o $(CFLAGS)
 
 file_ksoc_array_generation.o: file_ksoc_array_generation.c
-	$(CC) -c file_ksoc_array_generation.c -o file_ksoc_array_generation.o $(CFLAGS)
+	$(CC) -c file_ksoc_array_generation.c $(BFLAGS) file_ksoc_array_generation.o $(CFLAGS)
 
 serial.o: serial.c
-	$(CC) -c serial.c -o serial.o $(CFLAGS)
+	$(CC) -c serial.c $(BFLAGS) serial.o $(CFLAGS)
