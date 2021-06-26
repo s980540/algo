@@ -3,5 +3,18 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"makefile.extensionOutputFolder": "./.vscode",
+		"makefile.launchConfigurations": [
+			{
+				"binaryPath": "C:\\Workspace\\algo\\algo.exe",
+				"binaryArgs": ["string", "--help"],
+				"cwd": "C:\\Workspace\\algo",
+				"stopAtEntry": true,
+				"MIMode": "gdb",
+				"miDebuggerPath": "C:\\MinGW\\bin"
+			},
+		]
+	}
 }
