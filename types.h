@@ -15,24 +15,24 @@ typedef signed char s8;
 typedef signed short s16;
 typedef signed int s32;
 typedef signed long long s64;
-typedef unsigned char  bool;
+typedef unsigned char bool;
 
 typedef int ret_code;
 
 /**
  *linux/include/linux/types.h 
  */
-struct list_head {
-        struct list_head *next, *prev;
-};
+// struct list_head {
+//     struct list_head *next, *prev;
+// };
 
-struct hlist_head {
-        struct hlist_node *first;
-};
+// struct hlist_head {
+//     struct hlist_node *first;
+// };
 
-struct hlist_node {
-        struct hlist_node *next, **pprev;
-};
+// struct hlist_node {
+//     struct hlist_node *next, **pprev;
+// };
 
 /**
  *linux/include/linux/stddef.h 
@@ -44,7 +44,7 @@ enum {
         true  = 1
 };
 
-#define offsetof(TYPE, MEMBER)  ((size_t)&((TYPE *)0)->MEMBER)
+#define _offsetof(TYPE, MEMBER)  ((size_t)&((TYPE *)0)->MEMBER)
 
 /**
  * offsetofend(TYPE, MEMBER)
@@ -52,21 +52,21 @@ enum {
  * @TYPE: The type of the structure
  * @MEMBER: The member within the structure to get the end offset of
  */
-#define offsetend(TYPE, MEMBER) \
-        (offsetof(TYPE, MEMBER) + sizeof(((TYPE *)0)->MEMBER))
+#define _offsetend(TYPE, MEMBER) \
+    (_offsetof(TYPE, MEMBER) + sizeof(((TYPE *)0)->MEMBER))
 
 /** 
  * linux/include/linux/kernel.h
  *
- * container_of - cast a membr of a structure out to the containing structure
+ * _container_of - cast a member of a structure out to the containing structure
  * @ptr:        the pointer to the member.
  * @type:       the type of the container struct this is embedded in.
- * @member:     the name of the memver within the struct.
+ * @member:     the name of the member within the struct.
  *
  */
-#define container_of(ptr, type, member) ({ \
-        const typeof( ((type *)0)->member ) *__mptr = (ptr); \
-        (type *)( (char *)__mptr - offsetof(type, member) );})
+#define _container_of(ptr, type, member) ({ \
+    const typeof( ((type *)0)->member ) *__mptr = (ptr); \
+    (type *)( (char *)__mptr - _offsetof(type, member) );})
 
 #define U32_SHIFT 32
 #define U32_MASK ((1ULL << U32_SHIFT) - 1)

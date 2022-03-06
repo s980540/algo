@@ -3501,6 +3501,8 @@ ret_code ksoc_coe_to_sram(void)
         ferr = ferror(coe_file.fp);
         if (ferr) {
             printf("ferror: %d\n", ferr);
+            perror("");
+            clearerr(coe_file.fp);
             goto exit;
         }
 

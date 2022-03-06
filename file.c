@@ -86,3 +86,53 @@ long file_get_bin_size2(const char *file_name)
 
         return st.st_size;
 }
+
+char *file_gets(char *s, int limit, FILE* fp)
+{
+    int i;
+    char c;
+
+    for (i = 0; (i < limit - 1) && ((c = fgetc(fp)) != EOF); i++) {
+        s[i] = c;
+        if (c == '\n') {
+            i++;
+            break;
+        }
+    }
+
+    s[i] = '\0';
+
+    if (ferror(fp)) {
+        printf("ferror:%d\n", ferror(fp));
+        perror("");
+        clearerr(fp);
+        return NULL;
+    }
+
+    return s;
+}
+
+int file_gets2(char *s, int limit, FILE *fp)
+{
+    int i;
+    char c;
+
+    for (i = 0; (i < limit - 1) && ((c = fgetc(fp)) != EOF); i++) {
+        s[i] = c;
+        if (c == '\n') {
+            i++;
+            break;
+        }
+    }
+
+    s[i] = '\0';
+
+    if (ferror(fp)) {
+        printf("ferror:%d\n", ferror(fp));
+        perror("");
+        clearerr(fp);
+        return -1;
+    }
+
+    return i;
+}

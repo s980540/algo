@@ -824,7 +824,7 @@ static void fat32_copy_dentry_file(struct _fat_volume *fatd, struct _fat_volume 
                                         list_del(&dentry_copy->list);
                                         safe_free(dentry_copy);
                                 }
-                                fatal_error(!list_empty(&dentry_copy_head));
+                                fatal_error(!list_is_empty(&dentry_copy_head));
                                 fat32_check_dentry(fatd->dentry_buf, fatd->cbuf_size);
                                 fat_write_volume(fatd->oper->sectof(fatd->dentry_c, fatd), fatd->cbuf_sectcnt, fatd->dentry_buf, fatd, "fatd->dentry_buf");
                         }
@@ -860,7 +860,7 @@ static void fat32_copy_volume(struct _fat_volume *fatd, struct _fat_volume *fats
         fat32_copy_dentry_file(fatd, fats);
 
         while (1) {
-                if (!list_empty(fats->dir_copy_head)) {
+                if (!list_is_empty(fats->dir_copy_head)) {
                         dir_copy = list_first_entry(fats->dir_copy_head, typeof(*dir_copy), list);
                          
                         // go to child dir

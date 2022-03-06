@@ -1,15 +1,19 @@
-# Project: algorithm_ansi_c 
+# Project: algo 
 # Makefile created by Steve Jhang
 # Date modified: 2018.01.03
 
 CPP      = g++.exe -mno-ms-bitfields
 CC       = gcc.exe -mno-ms-bitfields
 WINDRES  = windres.exe
-OBJ      = main.o menu.o string_match.o data_struct.o utility.o mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o
-LINKOBJ  = main.o menu.o string_match.o data_struct.o utility.o mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o
+OBJ      = main.o menu.o string_match.o data_struct.o utility.o \
+			mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o \
+			list.o sort.o c_test.o tree.o
+LINKOBJ  = main.o menu.o string_match.o data_struct.o utility.o \
+			mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o \
+			list.o sort.o c_test.o tree.o
 
 LIBS     = -L"C:/MinGW/lib" \
-           -L"C:/MinGW/mingw32/lib" \
+        	-L"C:/MinGW/mingw32/lib" \
            -static-libgcc -m32
 INCS     = -I"C:/MinGW/include" \
            -I"C:/MinGW/mingw32/include" \
@@ -18,11 +22,7 @@ CXXINCS  = -I"C:/MinGW/include" \
            -I"C:/MinGW/mingw32/include" \
            -I"C:/MinGW/lib/gcc/mingw32/5.3.0/include" \
            -I"C:/MinGW/lib/gcc/mingw32/5.3.0/include/c++"
-#LIBS     = -L"C:/MinGW64/mingw64/lib" -L"C:/MinGW64/mingw64/lib/gcc/x86_64-w64-mingw32/lib" -static-libgcc -m32
-#INCS	  = -I"C:/MinGW64/mingw64/include -I"C:/MinGW64/mingw64/lib/gcc/x86_64-w64-mingw32/7.1.0/include"
-#LIBS     = -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib32" -L"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -m32
-#INCS     = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
-#CXXINCS  = -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files (x86)/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+
 
 BIN      = algo.exe
 CXXFLAGS = $(CXXINCS) -m32
@@ -76,3 +76,15 @@ file_ksoc_array_generation.o: file_ksoc_array_generation.c
 
 serial.o: serial.c
 	$(CC) -c serial.c $(BFLAGS) serial.o $(CFLAGS)
+
+list.o: list.c
+	$(CC) -c list.c $(BFLAGS) list.o $(CFLAGS)
+
+sort.o: sort.c
+	$(CC) -c sort.c $(BFLAGS) sort.o $(CFLAGS)
+
+c_test.o: c_test.c
+	$(CC) -c c_test.c $(BFLAGS) c_test.o $(CFLAGS)
+
+tree.o: tree.c
+	$(CC) -c tree.c $(BFLAGS) tree.o $(CFLAGS)

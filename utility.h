@@ -11,6 +11,7 @@
 #include "types.h"
 #include "error.h"
 
+#define CONFIG_ASSERTION_ENANLE (TRUE)
 //define debug_filter     [assert_enable] << 1 | [msg_enable] << 0
 #define AST(n)            ((n) << 1)
 #define MSG(n)            (n)
@@ -85,13 +86,28 @@ static inline void __printd_cond(int cond, char *format, ...)
 #define printd_var3(s, n, ...) \
         printd("%s" string_format##n "\n", s, __VA_ARGS__)
 
-#define ASSERT(debug_filter, cond) ({ \
-    if (((debug_filter) & AST(1)) && !(cond)){ \
-        printf("[%s][%d] ASSERT(0)\n", __FUNCTION__, __LINE__); \
+#define ASSERT(cond) ({ \
+    if ((CONFIG_ASSERTION_ENANLE) && !(cond)){ \
+        printf("[%s][%d][%s] \"%s\" ASSERTTION FAILED\n", \
+            __FILE__, __LINE__, __FUNCTION__, #cond); \
         while (1); \
     }  \
     (cond); \
 })
+
+#define PRINT_ARRAY(p, size, digit) \
+    {   \
+        size_t i; \
+        for (i = 0; i < size; i++) { \
+            if (i && (i % 16 == 0)) \
+                printf("\n");   \
+            printf("%"#digit"d ", p[i]); \
+        }   \
+        if (i && (i - 1) && ((i - 1) % 16 == 0)) \
+            printf("\n"); \
+        else \
+            printf("\n\n"); \
+    }
 
 #define LITTLE_ENDIAN           (0)
 #define BIG_ENDIAN              (1)

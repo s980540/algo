@@ -13,4 +13,7 @@ int file_close(ALGO_FILE *afp);
 long file_get_bin_size(FILE *fp);
 long file_get_bin_size2(const char *file_name);
 
+char *file_gets(char *s, int limit, FILE* fp);
+int file_gets2(char *s, int limit, FILE *fp);
+
 #endif  /* ~ __FILE_H__ */

@@ -376,14 +376,14 @@ void free_mbr_disk(struct _mbr_disk *mbr_disk)
                         free(i);
                 }
 
-                __fatal_error(!list_empty(&mbr_disk->ppar_head));
+                __fatal_error(!list_is_empty(&mbr_disk->ppar_head));
 
                 list_for_each_entry_safe(i, j, &mbr_disk->lpar_head, list) {
                         list_del(&i->list);
                         free(i);
                 }
 
-                __fatal_error(!list_empty(&mbr_disk->lpar_head));
+                __fatal_error(!list_is_empty(&mbr_disk->lpar_head));
 
                 free(mbr_disk);
         }
@@ -584,7 +584,7 @@ void mbr_par_add_ext(void)
                 return;
         }
 
-        empty = list_empty(&mbr_disk_mgr->lpar_head);
+        empty = list_is_empty(&mbr_disk_mgr->lpar_head);
 
         /* search the list to see whether we have a valid free par for logical par */
         fpar = mbr_par_req(!empty ? &mbr_disk_mgr->lpar_head : &mbr_disk_mgr->ppar_head,
@@ -643,7 +643,7 @@ void mbr_par_add_ext(void)
 
                 struct _mbr_par_list *par_next = par;
 
-                list_for_each_entry_continue(par_next, &mbr_disk_mgr->lpar_head, list) {
+                list_for_each_entry_cont(par_next, &mbr_disk_mgr->lpar_head, list) {
 
                         if (par_next->_type != LIST_PAR)
                                 continue;
@@ -741,7 +741,7 @@ void mbr_par_write(void)
 
         write_disk(udaccs.disk_idx, 0, 1, mbr);
 
-        if (list_empty(&mbr_disk_mgr->lpar_head) || list_is_singular(&mbr_disk_mgr->lpar_head)) {
+        if (list_is_empty(&mbr_disk_mgr->lpar_head) || list_is_singular(&mbr_disk_mgr->lpar_head)) {
                 //__fatal_error(1);
                 return;
         }
@@ -755,7 +755,7 @@ void mbr_par_write(void)
         while (1) {
 
                 par = list_prepare_entry(par, &mbr_disk_mgr->lpar_head, list);
-                list_for_each_entry_continue(par, &mbr_disk_mgr->lpar_head, list) {
+                list_for_each_entry_cont(par, &mbr_disk_mgr->lpar_head, list) {
 
                         if (par->_type != LIST_PAR)
                                 continue;
@@ -780,7 +780,7 @@ void mbr_par_write(void)
                 par_next = par;
                 memset(&mbr->par_entry[1], 0, sizeof(struct _mbr_par_entry));
 
-                list_for_each_entry_continue(par_next, &mbr_disk_mgr->lpar_head, list) {
+                list_for_each_entry_cont(par_next, &mbr_disk_mgr->lpar_head, list) {
 
                         if (par_next->_type != LIST_PAR)
                                 continue;

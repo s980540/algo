@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "utility.h"
+#include "list.h"
 
 #define FAT_DEBUG_MODE
 #define FAT_DEBUG_MSG

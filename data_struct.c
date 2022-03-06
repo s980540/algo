@@ -15,7 +15,7 @@ void test_list(void)
         /* create a empty list/ list head. */
         LIST_HEAD(foo_head);
         #if 0
-        if (!list_empty(&foo_head))
+        if (!list_is_empty(&foo_head))
                 __fatal_error(1);
 
         /* add elements to a stack. */
@@ -25,7 +25,7 @@ void test_list(void)
         }
 
         /* delete elements from the stack. */
-        for (i = 0; !list_empty(&foo_head); i++) {
+        for (i = 0; !list_is_empty(&foo_head); i++) {
                 struct list_head *del = foo_head.next;
                 list_del(del);
                 free(list_entry(del, struct _foo, list));
@@ -41,7 +41,7 @@ void test_list(void)
         }
 
         /* delete elements from the queue. */
-        for (i = 0; !list_empty(&foo_head); i++) {
+        for (i = 0; !list_is_empty(&foo_head); i++) {
                 struct list_head *del = foo_head.next;
                 list_del(del);
                 free(list_entry(del, struct _foo, list));
@@ -107,7 +107,7 @@ void test_list(void)
         }
         #endif
         /* delete elements from the queue. */
-        for (i = 0; !list_empty(&foo_head); i++) {
+        for (i = 0; !list_is_empty(&foo_head); i++) {
                 struct list_head *del = foo_head.next;
                 list_del(del);
                 free(list_entry(del, struct _foo, list));

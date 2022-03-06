@@ -7,12 +7,12 @@
 #include "global.h"
 
 #define CONFIG_MENU_OPT_DEBUG_MESSAGE   (1)
+#define OCNFIG_MENU_DEBUG_ENABLE        (TRUE)
 
 #define MENU_MAX_PROG_NAME_LEN          (40)
 #define MENU_MAX_FUNC_NAME_LEN          (40)
 #define MENU_FUNC_MAX_HELP_STR_LEN      (100)
 #define MENU_OPT_MAX_HELP_STR_LEN       (100)
-
 #define MENU_FUNC_MAX_HELP
 
 #define GET_ARGUMENT(type) \
@@ -26,6 +26,12 @@
             while(1);                                       \
         }                                                   \
     } while(0)
+
+#if (CONFIG_MENU_DEBUG_ENABLE)
+    #define MENU_ASSERT(cond)   ASSERT(cond)
+#else
+    #define MENU_ASSERT(cond)
+#endif
 
 typedef enum _MENU_RET_CODE
 {
@@ -59,8 +65,12 @@ typedef enum _MENU_FUNCTION_CODE
     MENU_FUNC_DEBUG_VERBOSE,
     /* algorithm related functions */
     MENU_FUNC_STRING_MATCH,
-    MENU_FUNC_TEST_SLL,
-    MENU_FUNC_TEST_LIST,
+    MENU_FUNC_LIST,
+    MENU_FUNC_C_TEST,
+    MENU_FUNC_SORT,
+    MENU_FUNC_TREE,
+    // MENU_FUNC_TEST_SLL,
+    // MENU_FUNC_TEST_LIST,
     /* file system related functions */
     TEST_READ_DISK,
     TEST_WRITE_DISK,
@@ -130,6 +140,14 @@ typedef struct _MENU_FUNCTION
     const char *help_str;
 } MENU_FUNCTION;
 
+/**
+ * @brief A convert function used to convert a input value to a desire result
+ * @param r The final converted result
+ * @param v The input value
+ * @retval a void pointer point to result
+ */
+typedef void *(*PARG_CONVERT_FUNC)(void *r, const void *v);
+
 char *menu_get_prog_name(const char *s);
 void get_name(char *buf, const char *s);
 void *opt_get_arg(void);
@@ -143,7 +161,8 @@ ret_code menu_func_process(int argc, char **argv, const MENU_FUNCTION *menu_func
 
 ret_code menu_opt_init(int argc, int argc_min, char **argv, const struct _MENU_OPTION *menu_options);
 void menu_opt_help(const char *func_name, const struct _MENU_OPTION *menu_options);
-ret_code menu_get_opt(int *menu_opt_code, const MENU_OPTION *menu_options);
+ret_code menu_get_opt_code(int *opt_code, const MENU_OPTION *menu_options);
+void *menu_get_arg(int index, void *result, PARG_CONVERT_FUNC convert);
 
 extern bool end_of_program;
 

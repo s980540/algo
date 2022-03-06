@@ -7,8 +7,9 @@
 #include "types.h"
 #include "error.h"
 #include "utility.h"
+#include "menu.h"
 
-#define EN_STRING_MATCH_DBG_OPT
+#define CONFIG_STRING_MATCH_DEBUG_MESSAGE   (TRUE)
 
 ret_code menu_func_string_match(int argc, char **argv);
 void string_match_test(void);

@@ -418,29 +418,29 @@ unsigned char is_str_to_hex_valid(const char *str)
 
 u64 *str_to_hex(const char *str)
 {
-        static u64 val;
-        u32 i, len;
-        char ch;
-        unsigned char temp;
+    static u64 val;
+    u32 i, len;
+    char ch;
+    unsigned char temp;
 
-        if (!is_str_to_hex_valid(str))
-                return false;
+    if (!is_str_to_hex_valid(str))
+        return NULL;
 
-        for (i = 0, len = strlen_of(str), val = 0; i < len; i++) {
+    for (i = 0, len = strlen_of(str), val = 0; i < len; i++) {
 
-                ch = str[i];
+        ch = str[i];
 
-                if (ch >= '0' && ch <= '9')
-                        temp = ch - '0';
-                else if (ch >= 'A' && ch <= 'F')
-                        temp = ch - 'A';
-                else if (ch >= 'a' && ch <= 'f')
-                        temp = ch - 'a';
+        if (ch >= '0' && ch <= '9')
+            temp = ch - '0';
+        else if (ch >= 'A' && ch <= 'F')
+            temp = ch - 'A';
+        else if (ch >= 'a' && ch <= 'f')
+            temp = ch - 'a';
 
-                val = (val << 4) + temp;
-        }
+        val = (val << 4) + temp;
+    }
 
-        return &val;
+    return &val;
 }
 
 /* String */

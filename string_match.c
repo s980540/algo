@@ -1,4 +1,4 @@
-#include "menu.h"
+
 
 #include "string_match.h"
 
@@ -21,9 +21,9 @@ static const struct _MENU_OPTION string_match_options[] = {
 ret_code menu_func_string_match(int argc, char **argv)
 {
     MENU_RET_CODE ret;
-    int menu_opt_code;
+    int opt_code;
 
-    printf("menu_func_string_match\n");
+    printf("%s\n", __FUNCTION__);
 
     ret = menu_opt_init(argc, 3, argv, string_match_options);
     if (ret != MENU_RET_SUCCESS) {
@@ -35,10 +35,10 @@ ret_code menu_func_string_match(int argc, char **argv)
     }
 
     while (1) {
-        ret = menu_get_opt(&menu_opt_code, string_match_options);
+        ret = menu_get_opt_code(&opt_code, string_match_options);
         if (ret != MENU_RET_SUCCESS) {
             if (ret != MENU_RET_EOF) {
-                printf("menu_get_opt failed (%d)\n", ret);
+                printf("menu_get_opt_code failed (%d)\n", ret);
 
                 /* If fail to get an option, we show available options for user */
                 menu_opt_help("algo string", string_match_options);
@@ -46,7 +46,7 @@ ret_code menu_func_string_match(int argc, char **argv)
             break;
         }
 
-        switch (menu_opt_code) {
+        switch (opt_code) {
         case OPT_CODE_STRING_MATCH_HELP:
             menu_opt_help("algo string", string_match_options);
             break;
@@ -82,7 +82,7 @@ void string_match_test(void)
 
 int native_string_match(const char *src, const char *tar, u32 *rlt)
 {
-#ifdef EN_STRING_MATCH_DBG_OPT
+#if CONFIG_STRING_MATCH_DEBUG_MESSAGE
     if (src == NULL || tar == NULL)
         __fatal_error(1);
 #endif
@@ -106,7 +106,7 @@ int native_string_match(const char *src, const char *tar, u32 *rlt)
         }
 
         if (j == tlen) {
-        #ifdef EN_STRING_MATCH_DBG_OPT
+        #if CONFIG_STRING_MATCH_DEBUG_MESSAGE
             if (tmp == UINT_MAX)
                 __fatal_error(1);
         #endif

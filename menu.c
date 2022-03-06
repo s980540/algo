@@ -24,79 +24,6 @@ static const struct _MENU_FUNCTION _default_functions[] = {
 //     {NULL}
 // };
 
-// static const struct _MENU_OPTION _menu_options[] = {
-//     {"help",                MENU_FUNC_HELP,                     '-', "Display this summary"},
-//     {"ksoc-coe-to-sram",    MENU_FUNC_KSOC_COE_TO_SRAM,         '-', "Convert .coe file to .c file (const char array)"},
-//     {"serial",              MENU_FUNC_SERIAL_COMM_TEST,         '-', "Serial communication test"},
-//     {"serial2",             MENU_FUNC_SERIAL_COMM_TEST2,        '-', "Serial communication test 2"},
-//     {"ksoc-bin-to-array",   MENU_FUNC_KSOC_BIN_TO_ARRAY,        '-', "Convert a bin file to a file (const char array)"},
-//     {"io-parser",           MENU_FUNC_KSOC_IO_SCRIPT_TO_FILE,   's', "Convert a I/O script to a file"},
-//     {"date",                MENU_FUNC_KSOC_SET_BIN_DATETIME,    's', "Set bin datetime"},
-//     {"ver",                 MENU_FUNC_KSOC_SET_BIN_VERSION,     's', "Set bin version"},
-//     {"bin",                 MENU_FUNC_KSOC_SET_BIN_NAME,        's', "Rename bin file"},
-//     {"v",                   MENU_FUNC_DEBUG_VERBOSE,            '-', "Enable verbose debug message"},
-// #if 0
-//     {"strmatch",    MENU_FUNC_STRING_MATCH,          '-', "Demo & test the functionality of string_match"},
-//     {"ll",          MENU_FUNC_TEST_LIST,                  '-', "Demo & test the functionality of Doubly linked-list"},
-//     {"trd",         TEST_READ_DISK,                 '-', "Demo & test the functionality of winapi readfile"},
-//     {"twd",         TEST_WRITE_DISK,                '-', "Demo & test the functionality of winapi writefile"},
-//     {"lsd",         LIST_PHYDRIVE,                  '-', "LIST_PHYDRIVE"},
-//     {"rd",          READ_DISK,                      '-', "READ_DISK"},
-//     {"wd",          WRITE_DISK,                     '-', "WRITE_DISK"},
-//     {"rv",          READ_VOLUME,                    '-', "READ_VOLUME"},
-//     {"wv",          WRITE_VOLUME,                   '-', "WRITE_VOLUME"},
-//     {"prsb",        PRINT_SECTOR_BUFFER,            '-', "PRINT_SECTOR_BUFFER"},
-//     {"tmbr",        TEST_MBR,                       '-', "TEST_MBR"},
-//     {"mp",          MBR_PRINT,                      '-', "MBR_PRINT"},
-//     {"l",           SET_LBA,                        'v', "SET_LBA"},
-//     {"s",           SET_SECTOR_COUNT,               'v', "SET_SECTOR_COUNT"},
-//     {"d",           SET_PHYDRIVE,                   'v', "SET_PHYDRIVE"},
-//     {"v",           SET_VOLUME_LABLE,               's', "SET_VOLUME_LABLE"},
-//     {"p",           SET_PARTITION_ENTRY_NUM,        'v', "SET_PARTITION_ENTRY_NUM"},
-//     {"b",           SET_EXTENDED_PAR,               'v', "SET_EXTENDED_PAR"},
-//     {"c",           SET_CLUSTER,                    'v', "SET_CLUSTER"},
-//     {"r",           MBR_PAR_READ,                   '-', "MBR_PAR_READ"},
-//     {"a",           MBR_PAR_ADD,                    '-', "MBR_PAR_ADD"},
-//     {"pc",          MBR_PAR_CLEAR,                  '-', "MBR_PAR_CLR"},
-//     {"mppe",        MBR_PAR_PRINT_PAR_ENTRY,        '-', "MBR_PAR_PRINT_PAR_ENTRY"},
-//     {"mpped",       MBR_PAR_PRINT_PAR_ENTRY_DETAIL, '-', "MBR_PAR_PRINT_PAR_ENTRY_DETAIL"},
-//     {"mppa",        MBR_PAR_PRINT_ALL,              '-', "MBR_PAR_PRINT_ALL"},
-//     {"lw",          LBA_WRITE,                      '-', "LBA_WRITE"},
-//     {"lc",          LBA_CLEAR,                      '-', "LBA_CLEAR"},
-//     {"lcr",         LBA_CLEAR_RANGE,                '-', "LBA_CLEAR_RANGE"},
-//     {"lca",         LBA_CLEAR_ALL,                  '-', "LBA_CLEAR_ALL"},
-//     {"vlc",         VOLUME_LBA_CLEAR,               '-', "VOLUME_LBA_CLEAR"},
-//     {"sc",          SB_COPY,                        '-', "SB_COPY"},
-//     {"sp",          SB_PASTE,                       '-', "SB_PASTE"},
-//     {"tgpt",        TEST_GPT,                       '-', "TEST_GPT"},
-//     {"gpghd",       GPT_PAR_PRINT_GPT_HEADER_DETAIL,'-', "GPT_PAR_PRINT_GPT_HEADER_DETAIL"},
-//     {"gpped",       GPT_PAR_PRINT_PAR_ENTRY_DETAIL, '-', "GPT_PAR_PRINT_PAR_ENTRY_DETAIL"},
-//     {"tfat",        TEST_FAT,                       '-', "TEST_FAT"},
-//     {"f32mnt",      FAT32_MOUNT,                    '-', "FAT32_MOUNT"},
-//     {"f32pfid",     FAT32_PRINT_FS_INFO_DETAIL,     '-', "FAT32_PRINT_FS_INFO_DETAIL"},
-//     {"f32stat",     FAT_STAT,                       '-', "FAT_STAT"},
-//     {"f32cv",       FAT_COPY_VOLUME,                '-', "FAT_COPY_VOLUME"},
-//     {"frc",         FAT_READ_CLUSTER,               '-', "FAT_READ_CLUSTER"},
-//     {"fpc",         FAT_PRINT_CLUSTER,              '-', "FAT_PRINT_CLUSTER"},
-//     {"frf",         FAT_READ_FSECT,                 '-', "FAT_READ_FSECT"},
-//     {"aes",         AES_TEST,                       '-', "AES_TEST"},
-// #endif
-//     {"pau",         PAUSE,                          '-', "PAUSE"},
-//     {"e",           END_OF_PROGRAM,                 '-', "END_OF_PROGRAM"},
-
-//     {NULL}
-// };
-#if 0
-const struct _MENU_OPTION var_opt[] = {
-    {"l",           SET_LBA,                        'v', "SET_LBA"},
-    {"s",           SET_SECTOR_COUNT,               'v', "SET_SECTOR_COUNT"},
-    {"d",           SET_PHYDRIVE,                   'v', "SET_PHYDRIVE"},
-    {"p",           SET_PARTITION_ENTRY_NUM,        'v', "SET_PARTITION_ENTRY_NUM"},
-    {"b",           SET_EXTENDED_PAR,               'v', "SET_EXTENDED_PAR"},
-    {NULL}
-};
-#endif
-
 const static char menu_help_str[] = "--";
 const static char menu_more_str[] = "---";
 
@@ -104,11 +31,11 @@ static char **m_argv;
 static int m_argc;
 static int m_argi;
 static int m_argt = 0;
-static char *m_param;
+// static char *m_param;
+static int m_param_idx = 0;
+static int m_param_cnt = 0;
 static int _value;
-// static char *g_dunno;
-// static const struct _MENU_OPTION *g_unknown;
-// static const struct _MENU_OPTION *menu_default_options;
+
 static char _prog_name[MENU_MAX_PROG_NAME_LEN];
 static char _func_name[MENU_MAX_FUNC_NAME_LEN];
 
@@ -135,8 +62,6 @@ char *menu_get_prog_name(const char *s)
     /* Copy over the prog name, in lowercae. */
     if (n > sizeof(_prog_name) - 1)
         n = sizeof(_prog_name) - 1;
-
-    printf("n=%d\n", n);
 
     for (q = _prog_name, i = 0; i < n; i++, p++)
         *q++ = isupper(*p) ? tolower(*p) : *p;
@@ -240,6 +165,9 @@ ret_code menu_opt_init(
         switch (opt->arg_type) {
         case 0:
         case '-':
+        case 'a':
+        case 'r':
+        case 'g':
         case '/':
         case '<':
         case '>':
@@ -251,7 +179,6 @@ ret_code menu_opt_init(
         case 'l':
         case 'n':
         case 'p':
-        case 'v':
         case 's':
         case 'u':
         case 'c':
@@ -338,42 +265,11 @@ ret_code menu_getchar(void)
     return MENU_RET_SUCCESS;
 }
 
-// ret_code menu_func_process()
-// {
-//     char *p;
-//     const
-
-//     if (m_argi != 1) {
-//         return MENU_RET_INVALID_INDEX;
-//     }
-
-//     if ((p = m_argv[m_argi++]) == NULL) {
-//         return MENU_RET_EOF;
-//     }
-
-// #if (CONFIG_MENU_OPT_DEBUG_MESSAGE)
-//     /* Use for debugging */
-//     printf("m_argv ::%s\n", p);
-// #endif
-
-//     if (*p == '-') {
-//         if (strcmp(p, "--help") != 0) {
-//             return MENU_RET_UNKOWN_CMD;
-//         }
-//     }
-
-//     for () {
-
-//     }
-// }
-
 ret_code menu_func_process(
-    int argc, 
-    char **argv, 
-    const MENU_FUNCTION *menu_functions
-    )
+    int argc,
+    char **argv,
+    const MENU_FUNCTION *menu_functions)
 {
-    const struct _MENU_FUNCTION *menu_func;
     MENU_RET_CODE ret;
     char *p;
 
@@ -383,30 +279,26 @@ ret_code menu_func_process(
     p = argv[1];
 
 #if (CONFIG_MENU_OPT_DEBUG_MESSAGE)
-    /* Use for debugging */
-    menu_func = menu_functions;
-    printf("m_argv ::%s\n", p, menu_func->name);
+    printf("m_argv ::%s\n", p, menu_functions->name);
 #endif
 
-    for (menu_func = menu_functions; menu_func->name; menu_func++) {
+    for (; menu_functions->name; menu_functions++) {
         /* If not this option, move on to the next one. */
-        if (strcmp(p, menu_func->name) != 0)
+        if (strcmp(p, menu_functions->name) != 0)
             continue;
 
         /* Excute associate operation */
-        if (menu_func->operation)
-            ret = menu_func->operation(argc, argv);
+        if (menu_functions->operation)
+            ret = menu_functions->operation(argc, argv);
 
         return ret;
     }
 
-    printf("%s: Type \"algo help\" to get useful messages.\n", menu_get_prog_name(argv[0]));
-
     return MENU_RET_UNKOWN_CMD;
 }
 
-ret_code menu_get_opt(
-    int *menu_opt_code,
+ret_code menu_get_opt_code(
+    int *opt_code,
     const MENU_OPTION *menu_options
     )
 {
@@ -416,7 +308,9 @@ ret_code menu_get_opt(
     long lval;
     unsigned long ulval;
 
-    m_param = NULL;
+    // m_param = NULL;
+    // m_param = 0;
+    m_param_cnt = 0;
 
     /* Look at current arg; at the end of the list? */
     if ((p = m_argv[m_argi++]) == NULL) {
@@ -443,9 +337,9 @@ ret_code menu_get_opt(
     //     p++;
     // }
 
-    /* If we have --flag=foo, snip it off. */
-    if ((m_param = strchr(p, '=')) != NULL)
-        *m_param++ = '\0';
+    // /* If we have --flag=foo, snip it off. */
+    // if ((m_param = strchr(p, '=')) != NULL)
+    //     *m_param++ = '\0';
 
     for (opt = menu_options; opt->name; opt++) {
         /* If not this option, move on to the next one. */
@@ -454,31 +348,41 @@ ret_code menu_get_opt(
 
         /* If it doesn't take a value, make sure none was given. */
         if (opt->arg_type == 0 || opt->arg_type == '-') {
-            if (m_param) {
-                return MENU_RET_INVALID_ARG_TYPE;
-            }
+            // if (m_param)
+            //     return MENU_RET_INVALID_ARG_TYPE;
 
-            *menu_opt_code = opt->code;
+            *opt_code = opt->code;
             m_argt = 0;
 
             return MENU_RET_SUCCESS;
         }
 
         /* Want a value; get the next param if =foo not use. */
-        if (m_param == NULL) {
-            if (m_argv[m_argi] == NULL) {
+        // if (m_param == NULL) {
+            if (m_argv[m_argi] == NULL)
                 return MENU_RET_INVALID_ARG;
-            } else {
-                m_param = m_argv[m_argi++];
-            }
-        }
+            else
+                m_param_idx = m_argi++;
+                // m_param = m_argv[m_argi++];
+        // }
 
         /* Syntax-check value. */
         switch (opt->arg_type) {
         default:
         case 's':
-        case 'v':
+        case 'a':
             m_argt = opt->arg_type;
+            m_param_cnt = 1;
+            break;
+
+        case 'r':
+            m_argt = opt->arg_type;
+            m_param_cnt = 2;
+            break;
+
+        case 'g':
+            m_argt = opt->arg_type;
+            m_param_cnt = 3;
             break;
 
         case '/':
@@ -496,7 +400,7 @@ ret_code menu_get_opt(
             return MENU_RET_INVALID_ARG_TYPE;
         }
 
-        *menu_opt_code = opt->code;
+        *opt_code = opt->code;
 
         return MENU_RET_SUCCESS;
     }
@@ -534,7 +438,7 @@ void menu_opt_help(
 
     if (menu_options[0].name != menu_help_str) {
         printf("\nUsage: %s [options]\n\nValid options are:\n\n",
-                func_name ? func_name : "");
+            func_name ? func_name : "");
     }
 
     /* Now let's print. */
@@ -594,7 +498,7 @@ static const char *argtype2str(const struct _MENU_OPTION *opt)
     case '-':
         return("");
 
-    case 'v':
+    case 'a':
         return("val");
 
     case '/':
@@ -637,93 +541,68 @@ static const char *argtype2str(const struct _MENU_OPTION *opt)
     return("param");
 }
 
-#if 1
+/**
+ * @brief Using convert function to convert a selected argument to a desire result
+ * @param index The index of selected argument
+ * @param result The final converted result
+ * @param convert The convert function (function pointer)
+ * @retval a void pointer point to result
+ */
+void *menu_get_arg(int index, void *result, PARG_CONVERT_FUNC convert)
+{
+    if ((index >= m_param_cnt) || ((m_param_idx + index) > m_argc))
+        return NULL;
+
+    return convert(result, m_argv[m_param_idx + index]);
+}
+
 void *opt_get_arg(void)
 {
-    int i, len;
-    char ch;
+    // int i, len;
+    // char ch;
 
-    if (m_argt == 0)
-        __fatal_error(1);
+    // MENU_ASSERT(m_argt != 0);
 
-    if (m_argt == 'v') {
-        len = strlen_of(m_param);
+    // if (m_argt == 'a') {
+    //     len = strlen_of(m_param);
 
-        if (len >= 2) {
-            /* =0x or =0X */
-            if (m_param[0] == '0' && (m_param[1] == 'x' || m_param[1] == 'X')) {
-                __fatal_error(len > 16);
-                u64 *p = str_to_hex(m_param + 2);
-                __fatal_error(!p);
+    //     if (len >= 2) {
+    //         /* =0x or =0X */
+    //         if (m_param[0] == '0' && (m_param[1] == 'x' || m_param[1] == 'X')) {
 
-                return(p);
-            /* =@ */
-            } else {
-                for (i = 0; i < len; i++) {
-                    ch = m_param[i];
-                    __fatal_error(ch < '0' || ch > '9');
-                }
+    //             MENU_ASSERT(len <= 16);
 
-                _value = atoi(m_param);
-                return(&_value);
-            }
-        } else {
-            __fatal_error((m_param[0] < '0' || m_param[0] > '9'));
-            _value = atoi(m_param);
+    //             u64 *p = str_to_hex(m_param + 2);
 
-            return(&_value);
-        }
+    //             MENU_ASSERT(p != NULL);
 
-    } else if (m_argt == 's') {
-        return(m_param);
-    }
+    //             return(p);
+    //         /* =@ */
+    //         } else {
+    //             for (i = 0; i < len; i++) {
+    //                 ch = m_param[i];
+    //                 __fatal_error(ch < '0' || ch > '9');
+    //             }
 
-    return(m_param);
+    //             _value = atoi(m_param);
+    //             return(&_value);
+    //         }
+    //     } else {
+    //         __fatal_error((m_param[0] < '0' || m_param[0] > '9'));
+    //         _value = atoi(m_param);
+
+    //         return(&_value);
+    //     }
+
+    // } else if (m_argt == 's') {
+    //     return(m_param);
+    // }
+
+    // return(m_param);
 }
-#else
-void *opt_get_arg(void)
-{
-    int i, len;
-    char ch;
-
-    if (m_argt == 0)
-        __fatal_error(1);
-
-    len = strlen_of(m_param);
-
-    if (len >= 2) {
-        /* =0x or =0X */
-        if (m_param[0] == '0' && (m_param[1] == 'x' || m_param[1] == 'X')) {
-            __fatal_error(len > 16);
-            u64 *p = str_to_hex(m_param + 2);
-            __fatal_error(!p);
-
-            return(p);
-        /* =@ */
-        } else if (m_param[0] == '@') {
-            return(m_param + 1);
-        } else {
-            for (i = 0; i < len; i++) {
-                ch = m_param[i];
-                __fatal_error(ch < '0' || ch > '9');
-            }
-
-            _value = atoi(m_param);
-            return(&_value);
-        }
-    } else {
-        __fatal_error((m_param[0] < '0' || m_param[0] > '9'));
-        _value = atoi(m_param);
-
-        return(&_value);
-    }
-
-    return(m_param);
-}
-#endif
 
 ret_code menu_func_help(
-    int argc, 
+    int argc,
     char **argv)
 {
     const struct _MENU_FUNCTION *func;
@@ -770,9 +649,80 @@ ret_code menu_func_help(
     return MENU_RET_SUCCESS;
 }
 
-
-
 #if 0
+// static const struct _MENU_OPTION _menu_options[] = {
+//     {"help",                MENU_FUNC_HELP,                     '-', "Display this summary"},
+//     {"ksoc-coe-to-sram",    MENU_FUNC_KSOC_COE_TO_SRAM,         '-', "Convert .coe file to .c file (const char array)"},
+//     {"serial",              MENU_FUNC_SERIAL_COMM_TEST,         '-', "Serial communication test"},
+//     {"serial2",             MENU_FUNC_SERIAL_COMM_TEST2,        '-', "Serial communication test 2"},
+//     {"ksoc-bin-to-array",   MENU_FUNC_KSOC_BIN_TO_ARRAY,        '-', "Convert a bin file to a file (const char array)"},
+//     {"io-parser",           MENU_FUNC_KSOC_IO_SCRIPT_TO_FILE,   's', "Convert a I/O script to a file"},
+//     {"date",                MENU_FUNC_KSOC_SET_BIN_DATETIME,    's', "Set bin datetime"},
+//     {"ver",                 MENU_FUNC_KSOC_SET_BIN_VERSION,     's', "Set bin version"},
+//     {"bin",                 MENU_FUNC_KSOC_SET_BIN_NAME,        's', "Rename bin file"},
+//     {"v",                   MENU_FUNC_DEBUG_VERBOSE,            '-', "Enable verbose debug message"},
+// #if 0
+//     {"strmatch",    MENU_FUNC_STRING_MATCH,          '-', "Demo & test the functionality of string_match"},
+//     {"ll",          MENU_FUNC_TEST_LIST,                  '-', "Demo & test the functionality of Doubly linked-list"},
+//     {"trd",         TEST_READ_DISK,                 '-', "Demo & test the functionality of winapi readfile"},
+//     {"twd",         TEST_WRITE_DISK,                '-', "Demo & test the functionality of winapi writefile"},
+//     {"lsd",         LIST_PHYDRIVE,                  '-', "LIST_PHYDRIVE"},
+//     {"rd",          READ_DISK,                      '-', "READ_DISK"},
+//     {"wd",          WRITE_DISK,                     '-', "WRITE_DISK"},
+//     {"rv",          READ_VOLUME,                    '-', "READ_VOLUME"},
+//     {"wv",          WRITE_VOLUME,                   '-', "WRITE_VOLUME"},
+//     {"prsb",        PRINT_SECTOR_BUFFER,            '-', "PRINT_SECTOR_BUFFER"},
+//     {"tmbr",        TEST_MBR,                       '-', "TEST_MBR"},
+//     {"mp",          MBR_PRINT,                      '-', "MBR_PRINT"},
+//     {"l",           SET_LBA,                        'a', "SET_LBA"},
+//     {"s",           SET_SECTOR_COUNT,               'a', "SET_SECTOR_COUNT"},
+//     {"d",           SET_PHYDRIVE,                   'a', "SET_PHYDRIVE"},
+//     {"v",           SET_VOLUME_LABLE,               's', "SET_VOLUME_LABLE"},
+//     {"p",           SET_PARTITION_ENTRY_NUM,        'a', "SET_PARTITION_ENTRY_NUM"},
+//     {"b",           SET_EXTENDED_PAR,               'a', "SET_EXTENDED_PAR"},
+//     {"c",           SET_CLUSTER,                    'a', "SET_CLUSTER"},
+//     {"r",           MBR_PAR_READ,                   '-', "MBR_PAR_READ"},
+//     {"a",           MBR_PAR_ADD,                    '-', "MBR_PAR_ADD"},
+//     {"pc",          MBR_PAR_CLEAR,                  '-', "MBR_PAR_CLR"},
+//     {"mppe",        MBR_PAR_PRINT_PAR_ENTRY,        '-', "MBR_PAR_PRINT_PAR_ENTRY"},
+//     {"mpped",       MBR_PAR_PRINT_PAR_ENTRY_DETAIL, '-', "MBR_PAR_PRINT_PAR_ENTRY_DETAIL"},
+//     {"mppa",        MBR_PAR_PRINT_ALL,              '-', "MBR_PAR_PRINT_ALL"},
+//     {"lw",          LBA_WRITE,                      '-', "LBA_WRITE"},
+//     {"lc",          LBA_CLEAR,                      '-', "LBA_CLEAR"},
+//     {"lcr",         LBA_CLEAR_RANGE,                '-', "LBA_CLEAR_RANGE"},
+//     {"lca",         LBA_CLEAR_ALL,                  '-', "LBA_CLEAR_ALL"},
+//     {"vlc",         VOLUME_LBA_CLEAR,               '-', "VOLUME_LBA_CLEAR"},
+//     {"sc",          SB_COPY,                        '-', "SB_COPY"},
+//     {"sp",          SB_PASTE,                       '-', "SB_PASTE"},
+//     {"tgpt",        TEST_GPT,                       '-', "TEST_GPT"},
+//     {"gpghd",       GPT_PAR_PRINT_GPT_HEADER_DETAIL,'-', "GPT_PAR_PRINT_GPT_HEADER_DETAIL"},
+//     {"gpped",       GPT_PAR_PRINT_PAR_ENTRY_DETAIL, '-', "GPT_PAR_PRINT_PAR_ENTRY_DETAIL"},
+//     {"tfat",        TEST_FAT,                       '-', "TEST_FAT"},
+//     {"f32mnt",      FAT32_MOUNT,                    '-', "FAT32_MOUNT"},
+//     {"f32pfid",     FAT32_PRINT_FS_INFO_DETAIL,     '-', "FAT32_PRINT_FS_INFO_DETAIL"},
+//     {"f32stat",     FAT_STAT,                       '-', "FAT_STAT"},
+//     {"f32cv",       FAT_COPY_VOLUME,                '-', "FAT_COPY_VOLUME"},
+//     {"frc",         FAT_READ_CLUSTER,               '-', "FAT_READ_CLUSTER"},
+//     {"fpc",         FAT_PRINT_CLUSTER,              '-', "FAT_PRINT_CLUSTER"},
+//     {"frf",         FAT_READ_FSECT,                 '-', "FAT_READ_FSECT"},
+//     {"aes",         AES_TEST,                       '-', "AES_TEST"},
+// #endif
+//     {"pau",         PAUSE,                          '-', "PAUSE"},
+//     {"e",           END_OF_PROGRAM,                 '-', "END_OF_PROGRAM"},
+
+//     {NULL}
+// };
+#if 0
+const struct _MENU_OPTION var_opt[] = {
+    {"l",           SET_LBA,                        'a', "SET_LBA"},
+    {"s",           SET_SECTOR_COUNT,               'a', "SET_SECTOR_COUNT"},
+    {"d",           SET_PHYDRIVE,                   'a', "SET_PHYDRIVE"},
+    {"p",           SET_PARTITION_ENTRY_NUM,        'a', "SET_PARTITION_ENTRY_NUM"},
+    {"b",           SET_EXTENDED_PAR,               'a', "SET_EXTENDED_PAR"},
+    {NULL}
+};
+#endif
+
 ret_code menu_process(int menu_func_code)
 {
     char *prog_name = NULL;
@@ -971,7 +921,7 @@ ret_code menu_process(int menu_func_code)
             break;
         }
 
-        if (udaccs.epar && !list_empty(&mbr_disk_mgr->lpar_head) ||
+        if (udaccs.epar && !list_is_empty(&mbr_disk_mgr->lpar_head) ||
             mbr_disk_mgr->ppar_count >= 3)
             mbr_par_add_ext();
         else

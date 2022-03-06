@@ -9,32 +9,26 @@
 #include "file.h"
 #include "file_ksoc_array_generation.h"
 #include "serial.h"
+#include "list.h"
+#include "c_test.h"
+#include "sort.h"
+#include "tree.h"
 
-static const struct _MENU_FUNCTION _menu_functions[] = {
+static const struct _MENU_FUNCTION _menu_functions[] =
+{
     {"help",    MENU_FUNC_HELP,         menu_func_help,         "Display this summary"},
     {"string",  MENU_FUNC_STRING_MATCH, menu_func_string_match, "Demo string match algorithm"},
+    {"list",    MENU_FUNC_LIST,         menu_func_list,         "Demo list algorithm"},
+    {"c-test",  MENU_FUNC_C_TEST,       menu_func_c_test,       "Demo c programming language"},
+    {"sort",    MENU_FUNC_SORT,         menu_func_sort,         "Demo sort algorithm"},
+    {"tree",    MENU_FUNC_TREE,         menu_func_tree,         "Demo tree algorithm"},
+
     {NULL}
 };
-
-// bool flag_verbose_debug_message = false;
-
-// void flag_init(void)
-// {
-//     flag_verbose_debug_message = false;
-// }
 
 int main(int argc, char *argv[])
 {
     int ret;
-
-    // debug
-    printf("argc=%d\n", argc);
-    for (int i = 0; ; i++) {
-        if (argv[i] == NULL)
-            break;
-
-        printf("argv[%d]=%s\n", i, argv[i]);
-    }
 
     /* Initialize menu option module */
     ret = menu_func_init(argc, argv, _menu_functions);
@@ -45,7 +39,11 @@ int main(int argc, char *argv[])
 
     ret = menu_func_process(argc, argv, _menu_functions);
     if (ret != MENU_RET_SUCCESS) {
-        printf("menu_func_process failed (%d)\n", ret);
+        if (ret != MENU_RET_EOF) {
+            printf("menu_func_process failed (%d)\n", ret);
+            printf("%s: Type \"algo help\" to get useful messages.\n", menu_get_prog_name(argv[0]));
+        }
+
         goto exit;
     }
 

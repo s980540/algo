@@ -9,12 +9,54 @@
 		"makefile.launchConfigurations": [
 			{
 				"binaryPath": "C:\\Workspace\\algo\\algo.exe",
-				"binaryArgs": ["string", "--help"],
+				"binaryArgs": ["sort", "--demo-merge-sort 11"],
 				"cwd": "C:\\Workspace\\algo",
 				"stopAtEntry": true,
 				"MIMode": "gdb",
 				"miDebuggerPath": "C:\\MinGW\\bin"
-			},
-		]
+			}
+        ],
+        "files.associations": {
+            "list.h": "c",
+            "error.h": "c",
+            "*.tcc": "cpp",
+            "cctype": "cpp",
+            "clocale": "cpp",
+            "cstdint": "cpp",
+            "cstdio": "cpp",
+            "cstdlib": "cpp",
+            "cwchar": "cpp",
+            "cwctype": "cpp",
+            "exception": "cpp",
+            "initializer_list": "cpp",
+            "iosfwd": "cpp",
+            "iostream": "cpp",
+            "istream": "cpp",
+            "limits": "cpp",
+            "new": "cpp",
+            "ostream": "cpp",
+            "stdexcept": "cpp",
+            "streambuf": "cpp",
+            "system_error": "cpp",
+            "type_traits": "cpp",
+            "typeinfo": "cpp",
+            "stddef.h": "c",
+            "sort.h": "c",
+            "c_test.h": "c",
+            "array": "c",
+            "string": "c",
+            "unordered_map": "c",
+            "memory": "c",
+            "fstream": "c",
+            "functional": "c",
+            "vector": "c",
+            "sstream": "c",
+            "tuple": "c",
+            "utility": "c",
+            "deque": "c",
+            "random": "c",
+            "algorithm": "c",
+            "tree.h": "c"
+        }
 	}
 }
