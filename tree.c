@@ -69,12 +69,13 @@ struct _too
 #define ELE_NUM (9)
 #define STACK_SIZE (256)
 
-static struct tree *_stack[STACK_SIZE];
+static struct tree *_lstack[STACK_SIZE];
+static struct tree *_rstack[STACK_SIZE];
 
 void tree_preorder_traverse_test(struct tree *t)
 {
     // T1. [Initialize]
-    int sp = 0;
+    int lsp = 0;
     struct tree *p = t;
 
     printf("preorder traverse start >>>\n");
@@ -89,16 +90,16 @@ void tree_preorder_traverse_test(struct tree *t)
     T3:
         // T3. [Visit p and stack p]
         printf("%c ", tree_entry(p, struct _too, tree)->a);
-        _stack[sp++]= p;
+        _lstack[lsp++]= p;
         p = p->llink;
         goto T2;
 
     T4:
         // T4. [p <= STACK]
-        if (sp == 0) {
+        if (lsp == 0) {
             break;
         }
-        p = _stack[--sp];
+        p = _lstack[--lsp];
         p = p->rlink;
         goto T2;
     }
@@ -109,7 +110,7 @@ void tree_preorder_traverse_test(struct tree *t)
 void tree_inorder_traverse_test(struct tree *t)
 {
     // T1. [Initialize] Set stack A empty, and set the link variable P <- T.
-    int sp = 0;
+    int lsp = 0;
     struct tree *p = t;
 
 
@@ -124,7 +125,7 @@ void tree_inorder_traverse_test(struct tree *t)
         }
 
         // T3. [STACK <= P] Set A <= P. Then set P <- LLINK(P) and return to step T2.
-        _stack[sp++] = p;
+        _lstack[lsp++] = p;
 
         // debug
         // printf("push %c\n", tree_entry(p, struct _too, tree)->a);
@@ -138,18 +139,18 @@ void tree_inorder_traverse_test(struct tree *t)
 
     T4:
         // T4. [P <= STACK] If stack A is empty, the algorithm terminates; otherwise set P <= A.
-        if (sp == 0) {
+        if (lsp == 0) {
             // debug
             // printf("STACK IS EMPTY\n");
             break;
         }
 
         // debug
-        // printf("sp: %d\n", sp);
-        // printf("_stack(%d): %c\n", sp - 1,
-        //     tree_entry(_stack[sp - 1], struct _too, tree)->a);
+        // printf("lsp: %d\n", lsp);
+        // printf("_lstack(%d): %c\n", lsp - 1,
+        //     tree_entry(_lstack[lsp - 1], struct _too, tree)->a);
 
-        p = _stack[--sp];
+        p = _lstack[--lsp];
 
         // debug
         // printf("RLINK(%c): %c\n", 
@@ -164,6 +165,66 @@ void tree_inorder_traverse_test(struct tree *t)
     }
 
     printf("\n<<< inorder traverse end\n");
+}
+
+void tree_postorder_traverse_test(struct tree *t)
+{
+    // T1. [Initialize]
+    int lsp = 0, rsp = 0;
+    struct tree *p = t;
+
+    printf("postorder traverse start >>>\n");
+
+    while (1) {
+    T2:
+        // T2. [p = EMPTY?]
+        if (p == NULL) {
+            goto T4;
+        }
+
+    T3:
+        // T3. [STACK <= P]
+        _lstack[lsp++] = p;
+        p = p->llink;
+        goto T2;
+
+    T4:
+        // T4. [p <= STACK]
+        if (lsp == 0) {
+            break;
+        }
+        p = _lstack[--lsp];
+
+        // T5. [RLINK(P) = EMPTY?]
+        if (p->rlink == NULL) {
+        T6:
+            // T6. [Visit P]
+            printf("%c ", tree_entry(p, struct _too, tree)->a);
+
+        T8:
+            // T8. [RSTACK = EMPTY?]
+            if (rsp == 0) {
+                goto T4;
+            } else {
+                // T9.
+                if (_rstack[rsp - 1]->rlink == p) {
+                    // T10.
+                    p = _rstack[--rsp];
+                    printf("%c ", tree_entry(p, struct _too, tree)->a);
+                    goto T8;
+                } else {
+                    goto T4;
+                }
+            }
+        } else {
+            // T7. [STACK <= P, P <- RLINK(P)]
+            _rstack[rsp++] = p;
+            p = p->rlink;
+            goto T2;
+        }
+    }
+
+    printf("\n<<< postorder traverse end\n");
 }
 
 void tree_test(void)
@@ -234,6 +295,7 @@ void tree_test(void)
 
     tree_preorder_traverse_test(too_root);
     tree_inorder_traverse_test(too_root);
+    tree_postorder_traverse_test(too_root);
 
     free(too);
 
