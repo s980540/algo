@@ -71,6 +71,41 @@ struct _too
 
 static struct tree *_stack[STACK_SIZE];
 
+void tree_preorder_traverse_test(struct tree *t)
+{
+    // T1. [Initialize]
+    int sp = 0;
+    struct tree *p = t;
+
+    printf("preorder traverse start >>>\n");
+
+    while (1) {
+    T2:
+        // T2. [p = EMPTY?]
+        if (p == NULL) {
+            goto T4;
+        }
+
+    T3:
+        // T3. [Visit p and stack p]
+        printf("%c ", tree_entry(p, struct _too, tree)->a);
+        _stack[sp++]= p;
+        p = p->llink;
+        goto T2;
+
+    T4:
+        // T4. [p <= STACK]
+        if (sp == 0) {
+            break;
+        }
+        p = _stack[--sp];
+        p = p->rlink;
+        goto T2;
+    }
+
+    printf("\npreorder traverse end <<<\n");
+}
+
 void tree_inorder_traverse_test(struct tree *t)
 {
     // T1. [Initialize] Set stack A empty, and set the link variable P <- T.
@@ -197,6 +232,7 @@ void tree_test(void)
     // F-J
     tree_add_r(&too[8].tree, &too[5].tree);
 
+    tree_preorder_traverse_test(too_root);
     tree_inorder_traverse_test(too_root);
 
     free(too);
