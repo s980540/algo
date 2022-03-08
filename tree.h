@@ -42,6 +42,23 @@ struct threaded_tree {
 #define tree_entry(ptr, type, member) \
     ((type *)( (char *)(ptr) - ((size_t)&((type *)0)->member) ))
 
+#define PRINT_TTO_NODE(name) \
+    _PRINT_TTREE_NODE_INFO(&ttree_head, tto, name, struct _tto, ttree, a)
+
+#define _PRINT_TTREE_NODE_INFO(head, p, index, type, member, data) \
+    printf("\n" #index "->ltag %d\n", ((p)[index]).member.ltag); \
+    printf(#index "->llink %c\n", ((p)[index]).member.llink == (head) ? 'H' : tree_entry(((p)[index]).member.llink, type, member)->data); \
+    printf(#index "->rtag %d\n", ((p)[index]).member.rtag); \
+    printf(#index "->rlink %c\n", ((p)[index]).member.rlink == (head) ? 'H' : tree_entry(((p)[index]).member.rlink, type, member)->data);
+
+static inline void INIT_TTREE_HEAD(struct threaded_tree *ttree)
+{
+    ttree->llink = ttree;
+    ttree->ltag = 1;
+    ttree->rlink = ttree;
+    ttree->rtag = 0;
+}
+
 static inline void INIT_TREE_NODE(struct tree *tree)
 {
     tree->llink = NULL;
@@ -70,7 +87,7 @@ static inline void tree_add_r(
     parent->rlink = child;
 }
 
-static inline void ttree_add_l(
+static inline void threaded_tree_set_l(
     struct threaded_tree *child,
     struct threaded_tree *parent,
     u8 tag)
@@ -79,7 +96,7 @@ static inline void ttree_add_l(
     parent->ltag = tag;
 }
 
-static inline void ttree_add_r(
+static inline void threaded_tree_set_r(
     struct threaded_tree *child,
     struct threaded_tree *parent,
     u8 tag)
