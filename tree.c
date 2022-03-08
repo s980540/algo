@@ -66,8 +66,29 @@ struct _too
     struct tree tree;
 };
 
+struct _tto
+{
+    char a;
+    struct threaded_tree ttree;
+};
+
+
 #define ELE_NUM (9)
 #define STACK_SIZE (256)
+
+
+enum _tree_node_index {
+    A = 0,
+    B = 1,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I
+};
+
 
 static struct tree *_lstack[STACK_SIZE];
 static struct tree *_rstack[STACK_SIZE];
@@ -104,7 +125,7 @@ void tree_preorder_traverse_test(struct tree *t)
         goto T2;
     }
 
-    printf("\npreorder traverse end <<<\n");
+    printf("\n<<< preorder traverse end\n");
 }
 
 void tree_inorder_traverse_test(struct tree *t)
@@ -227,6 +248,44 @@ void tree_postorder_traverse_test(struct tree *t)
     printf("\n<<< postorder traverse end\n");
 }
 
+void threaded_tree_inorder_traverse_test(struct threaded_tree *t)
+{
+    // S0. [Initialize.] Set P <- HEAD (Q <- HEAD, also)
+    struct threaded_tree *p = t, *q;
+
+    printf("\nthreaded tree inorder traverse start >>>\n");
+
+    while (1) {
+    S2:
+        // S2. [Search to left.] Set P <- Q, Q <- LLINK(Q)
+        q = p->llink;
+        if (p->ltag == 0) {
+            p = q;
+            goto S2;
+        }
+
+    S3:
+        // S3. [Visit P.] Visit unless P = HEAD 
+        if (p == t) {
+            break;
+        }
+
+        printf("%c ", tree_entry(p, struct _tto, ttree)->a);
+
+    S1:
+        // S1. [RLINK(P) a thread?]
+        q = p->rlink;
+        if (p->rtag) {
+            p = q;
+            goto S3;
+        } else {
+            p = q;
+        }
+    }
+
+    printf("\n<<< threaded tree  inorder traverse end\n");
+}
+
 void tree_test(void)
 {
     u32 i;
@@ -242,7 +301,7 @@ void tree_test(void)
 
     /* Initialize 9 nodes */
     for (i = 0; i < 9; i++) {
-        INIT_TREE(&too[i].tree);
+        INIT_TREE_NODE(&too[i].tree);
         too[i].a = 'A' + i;
     }
 
@@ -252,52 +311,108 @@ void tree_test(void)
     }
     printf("\n");
 
+    /* Create tree and subtree and connect them */
     too_root = &too[0].tree;
 
-    /* Create tree and subtree and connect them */
     // 0A 1B 2C 3D 4E 5F 6G 7H 8J
     // A-B
-    tree_add_l(&too[1].tree, &too[0].tree);
+    tree_add_l(&too[B].tree, &too[A].tree);
     // A-C
-    tree_add_r(&too[2].tree, &too[0].tree);
-
-    // // debug
-    // for (i = 0; i < 9; i++) {
-    //     printf("%c ", tree_entry(&too[i].tree, struct _too, tree)->a);
-    // }
-    // printf("\n");
-
-    // printf("%c %c %c\n", 
-    //     tree_entry(&too[0].tree, struct _too, tree)->a, 
-    //     tree_entry(too[0].tree.llink, struct _too, tree)->a,
-    //     tree_entry(too[0].tree.rlink, struct _too, tree)->a);
+    tree_add_r(&too[C].tree, &too[A].tree);
 
     // B-D
-    tree_add_l(&too[3].tree, &too[1].tree);
+    tree_add_l(&too[D].tree, &too[B].tree);
 
     // C-E
-    tree_add_l(&too[4].tree, &too[2].tree);
+    tree_add_l(&too[E].tree, &too[C].tree);
     // C-F
-    tree_add_r(&too[5].tree, &too[2].tree);
-
-    // printf("%c %c %c\n", 
-    //     tree_entry(&too[2].tree, struct _too, tree)->a, 
-    //     tree_entry(too[2].tree.llink, struct _too, tree)->a,
-    //     tree_entry(too[2].tree.rlink, struct _too, tree)->a);
+    tree_add_r(&too[F].tree, &too[C].tree);
 
     // E-G
-    tree_add_r(&too[6].tree, &too[4].tree);
+    tree_add_r(&too[G].tree, &too[E].tree);
 
     // F-H
-    tree_add_l(&too[7].tree, &too[5].tree);
+    tree_add_l(&too[H].tree, &too[F].tree);
     // F-J
-    tree_add_r(&too[8].tree, &too[5].tree);
+    tree_add_r(&too[I].tree, &too[F].tree);
 
     tree_preorder_traverse_test(too_root);
     tree_inorder_traverse_test(too_root);
     tree_postorder_traverse_test(too_root);
+#if 1
+    /* Allocate memory space for 9 nodes */
+    struct _tto *tto;
+    tto = malloc(sizeof(struct _tto) * ELE_NUM);
+
+    /* Initialize 9 nodes */
+    for (i = 0; i < 9; i++) {
+        INIT_TTREE_NODE(&tto[i].ttree);
+        tto[i].a = 'A' + i;
+    }
+
+    // debug
+    for (i = 0; i < 9; i++) {
+        printf("%c ", tree_entry(&tto[i].ttree, struct _tto, ttree)->a);
+    }
+    printf("\n");
+
+    /* Create tree and subtree and connect them */
+    // too_root = &tto[0].tree;
+    TTREE_HEAD(ttree_head);
+    // T-A ($P)
+    ttree_add_l(&tto[A].ttree, &ttree_head, 0);
+
+    // 0A 1B 2C 3D 4E 5F 6G 7H 8J
+    // A-B ($P)
+    ttree_add_l(&tto[B].ttree, &tto[A].ttree, 0);
+    // A-C (P$)
+    ttree_add_r(&tto[C].ttree, &tto[A].ttree, 0);
+
+    // B-D ($P)
+    ttree_add_l(&tto[D].ttree, &tto[B].ttree, 0);
+    // B-A (P$)
+    ttree_add_r(&tto[A].ttree, &tto[B].ttree, 1);
+
+    // C-E ($P)
+    ttree_add_l(&tto[E].ttree, &tto[C].ttree, 0);
+    // C-F (P$)
+    ttree_add_r(&tto[F].ttree, &tto[C].ttree, 0);
+
+    // D-T ($P)
+    ttree_add_l(&ttree_head, &tto[D].ttree, 1);
+    // D-B (P$)
+    ttree_add_r(&tto[B].ttree, &tto[D].ttree, 1);
+
+    // E-A ($P)
+    ttree_add_l(&tto[A].ttree, &tto[E].ttree, 1);
+    // E-G (P$)
+    ttree_add_r(&tto[G].ttree, &tto[E].ttree, 0);
+
+    // F-H ($P)
+    ttree_add_l(&tto[H].ttree, &tto[F].ttree, 0);
+    // F-J (P$)
+    ttree_add_r(&tto[I].ttree, &tto[F].ttree, 0);
+
+    // G-E ($P)
+    ttree_add_l(&tto[E].ttree, &tto[G].ttree, 1);
+    // G-C (P$)
+    ttree_add_r(&tto[C].ttree, &tto[G].ttree, 1);
+
+    // H-C ($P)
+    ttree_add_l(&tto[C].ttree, &tto[H].ttree, 1);
+    // H-F (P$)
+    ttree_add_r(&tto[F].ttree, &tto[H].ttree, 1);
+
+    // I-F ($P)
+    ttree_add_l(&tto[F].ttree, &tto[I].ttree, 1);
+    // I-T (P$)
+    ttree_add_r(&ttree_head, &tto[I].ttree, 1);
+
+    threaded_tree_inorder_traverse_test(&ttree_head);
+#endif
 
     free(too);
+    free(tto);
 
     return;
 }

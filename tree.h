@@ -25,16 +25,33 @@ struct tree {
     struct tree *llink, *rlink;
 };
 
-#define TREE_INIT(name)    {&(name), &(name)}
+struct threaded_tree {
+    struct {
+        u8 ltag : 1;
+        u8 rtag : 1;
+    };
+    struct threaded_tree *llink, *rlink;
+};
 
-#define TREE(name) \
-    struct tree name = TREE_INIT(name)
+// #define TTREE_HEAD_INIT(name)    {.ltag = 1, .rtag = 0, .llink = &(name), .rlink = &(name)}
+#define TTREE_HEAD_INIT(name)    {1, 0, &(name), &(name)}
+
+#define TTREE_HEAD(name) \
+    struct threaded_tree name = TTREE_HEAD_INIT(name)
 
 #define tree_entry(ptr, type, member) \
     ((type *)( (char *)(ptr) - ((size_t)&((type *)0)->member) ))
 
-static inline void INIT_TREE(struct tree *tree)
+static inline void INIT_TREE_NODE(struct tree *tree)
 {
+    tree->llink = NULL;
+    tree->rlink = NULL;
+}
+
+static inline void INIT_TTREE_NODE(struct threaded_tree *tree)
+{
+    tree->ltag = 0;
+    tree->rtag = 0;
     tree->llink = NULL;
     tree->rlink = NULL;
 }
@@ -51,6 +68,24 @@ static inline void tree_add_r(
     struct tree *parent)
 {
     parent->rlink = child;
+}
+
+static inline void ttree_add_l(
+    struct threaded_tree *child,
+    struct threaded_tree *parent,
+    u8 tag)
+{
+    parent->llink = child;
+    parent->ltag = tag;
+}
+
+static inline void ttree_add_r(
+    struct threaded_tree *child,
+    struct threaded_tree *parent,
+    u8 tag)
+{
+    parent->rlink = child;
+    parent->rtag = tag;
 }
 
 ret_code menu_func_tree(int argc, char **argv);
