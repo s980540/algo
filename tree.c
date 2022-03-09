@@ -275,7 +275,8 @@ void ttree_inorder_traverse_test(struct threaded_tree *t)
 
     S3:
         // S3. [Visit P.] Visit unless P = HEAD
-        if (p == t) {
+        // if (p == t) {
+        if (p == t || p == NULL) {
             break;
         }
 
@@ -313,7 +314,8 @@ void ttree_inorder_traverse_test(struct threaded_tree *t)
 
     S3:
         // S3. [Visit P.] Visit unless P = HEAD
-        if (p == t) {
+        // if (p == t) {
+        if (p == t || p == NULL) {
             break;
         }
 
@@ -346,7 +348,8 @@ void ttree_inorder_traverse_test(struct threaded_tree *t)
 
     VISIT:
         // S3. [Visit P.] Visit unless P = HEAD
-        if (p == t)
+        // if (p == t)
+        if (p == t || p == NULL)
             break;
 
         printf("%c ", tree_entry(p, struct _tto, ttree)->a);
@@ -380,7 +383,8 @@ struct threaded_tree *ttree_preorder_successor(
 
     // [Search through thread]
     s = p;
-    while (s->rtag)
+    // while (s->rtag)
+    while ((s->rtag) && (s->rlink != NULL))
         s = s->rlink;
 
     s = s->rlink;
@@ -399,13 +403,12 @@ void ttree_preorder_traverse_test(struct threaded_tree *t)
 
     while (1) {
         p = ttree_preorder_successor(0, p);
-        if (p == t)
+        // if (p == t)
+        if ((p == t) || p == NULL)
             break;
         else
             printf("%c ", tree_entry(p, struct _tto, ttree)->a);
     }
-    printf("\n");
-
     printf("\nthreaded tree preorder traverse end <<<\n");
 }
 
@@ -745,7 +748,7 @@ void tree_test(void)
     ttree_inorder_traverse_test(&ttree_head);
 
     //
-    printf("threaded tree insertion 1\n");
+    printf("\nthreaded tree insertion 1\n");
     INIT_TTREE_HEAD(&ttree_head);
     memset(tto, 0, sizeof(struct _tto) * ELE_NUM);
     // Initialize 9 nodes
@@ -757,14 +760,10 @@ void tree_test(void)
     ttree_add_l(&tto[A].ttree, &ttree_head);
     ttree_add_l(&tto[B].ttree, &tto[A].ttree);
     ttree_add_r(&tto[C].ttree, &tto[A].ttree);
-
     ttree_add_l(&tto[D].ttree, &tto[B].ttree);
-
     ttree_add_l(&tto[E].ttree, &tto[C].ttree);
     ttree_add_r(&tto[F].ttree, &tto[C].ttree);
-
     ttree_add_r(&tto[G].ttree, &tto[E].ttree);
-
     ttree_add_l(&tto[H].ttree, &tto[F].ttree);
     ttree_add_r(&tto[I].ttree, &tto[F].ttree);
 
@@ -772,7 +771,7 @@ void tree_test(void)
     ttree_inorder_traverse_test(&ttree_head);
 
     //
-    printf("threaded tree insertion 2\n");
+    printf("\nthreaded tree insertion 2\n");
     INIT_TTREE_HEAD(&ttree_head);
     memset(tto, 0, sizeof(struct _tto) * ELE_NUM);
     // Initialize 9 nodes
@@ -795,7 +794,7 @@ void tree_test(void)
     ttree_inorder_traverse_test(&ttree_head);
 
     //
-    printf("threaded tree insertion 3\n");
+    printf("\nthreaded tree insertion 3\n");
     INIT_TTREE_HEAD(&ttree_head);
     memset(tto, 0, sizeof(struct _tto) * ELE_NUM);
     // Initialize 9 nodes
@@ -817,8 +816,43 @@ void tree_test(void)
     ttree_preorder_traverse_test(&ttree_head);
     ttree_inorder_traverse_test(&ttree_head);
 
+    //
+    printf("\nthreaded tree insertion 4\n");
+    INIT_TTREE_HEAD(&ttree_head);
+    memset(tto, 0, sizeof(struct _tto) * ELE_NUM);
+    // Initialize 9 nodes
+    for (i = 0; i < 9; i++) {
+        INIT_TTREE_NODE(&tto[i].ttree);
+        tto[i].a = 'A' + i;
+    }
+
+    ttree_add_l(&tto[D].ttree, &tto[A].ttree);
+    ttree_add_r(&tto[I].ttree, &tto[A].ttree);
+    ttree_add_r(&tto[F].ttree, &tto[A].ttree);
+    ttree_add_l(&tto[H].ttree, &tto[F].ttree);
+    ttree_add_r(&tto[C].ttree, &tto[A].ttree);
+    ttree_add_l(&tto[E].ttree, &tto[C].ttree);
+    ttree_add_r(&tto[G].ttree, &tto[E].ttree);
+    ttree_add_l(&tto[B].ttree, &tto[A].ttree);
+
+    // ttree_add_l(&tto[A].ttree, &ttree_head);
+
+    // ttree_preorder_traverse_test(&ttree_head);
+    // ttree_inorder_traverse_test(&ttree_head);
+
+    ttree_preorder_traverse_test(&tto[A].ttree);
+    ttree_inorder_traverse_test(&tto[A].ttree);
+
+    ttree_preorder_traverse_test(&tto[D].ttree);
+    ttree_inorder_traverse_test(&tto[D].ttree);
+
+    ttree_preorder_traverse_test(&tto[C].ttree);
+    ttree_inorder_traverse_test(&tto[C].ttree);
+
     // Verify exercises 23. [22]
     /* TEST RIGHT-THREADED BINARY TREE */
+    printf("\nright-threaded tree insertion 1\n");
+
     struct _rtto *rtto;
 
     rtto = malloc(sizeof(struct _rtto) * ELE_NUM);
@@ -832,9 +866,6 @@ void tree_test(void)
         printf("%c ", tree_entry(&rtto[i].rttree, struct _tto, ttree)->a);
     }
     printf("\n");
-
-    //
-    printf("right-threaded tree insertion 1\n");
 
     struct right_threaded_tree rttree_head;
     INIT_RTTREE_HEAD(&rttree_head);
@@ -854,7 +885,7 @@ void tree_test(void)
     rttree_inorder_traverse_test(&rttree_head);
 
     //
-    printf("threaded tree insertion 2\n");
+    printf("\nthreaded tree insertion 2\n");
     INIT_RTTREE_HEAD(&rttree_head);
     memset(rtto, 0, sizeof(struct _rtto) * ELE_NUM);
     // Initialize 9 nodes
@@ -876,7 +907,7 @@ void tree_test(void)
     rttree_inorder_traverse_test(&rttree_head);
 
     //
-    printf("threaded tree insertion 3\n");
+    printf("\nthreaded tree insertion 3\n");
     INIT_RTTREE_HEAD(&rttree_head);
     memset(rtto, 0, sizeof(struct _rtto) * ELE_NUM);
     // Initialize 9 nodes

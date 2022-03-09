@@ -91,15 +91,15 @@ static inline void INIT_TREE_NODE(struct tree *tree)
 
 static inline void INIT_TTREE_NODE(struct threaded_tree *tree)
 {
-    tree->ltag = 0;
-    tree->rtag = 0;
+    tree->ltag = 1;
+    tree->rtag = 1;
     tree->llink = NULL;
     tree->rlink = NULL;
 }
 
 static inline void INIT_RTTREE_NODE(struct right_threaded_tree *tree)
 {
-    tree->rtag = 0;
+    tree->rtag = 1;
     tree->llink = NULL;
     tree->rlink = NULL;
 }
