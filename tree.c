@@ -72,6 +72,11 @@ struct _tto
     struct threaded_tree ttree;
 };
 
+struct _rtto
+{
+    char a;
+    struct right_threaded_tree rttree;
+};
 
 #define ELE_NUM (9)
 #define STACK_SIZE (256)
@@ -93,6 +98,7 @@ enum _tree_node_index {
 static struct tree *_lstack[STACK_SIZE];
 static struct tree *_rstack[STACK_SIZE];
 
+// 2.3.1. Algorithm T, exercise 12. [22]
 void tree_preorder_traverse_test(struct tree *t)
 {
     // T1. [Initialize]
@@ -128,6 +134,7 @@ void tree_preorder_traverse_test(struct tree *t)
     printf("\npreorder traverse end <<<\n");
 }
 
+// 2.3.1. Algorithm T
 void tree_inorder_traverse_test(struct tree *t)
 {
     // T1. [Initialize] Set stack A empty, and set the link variable P <- T.
@@ -188,6 +195,7 @@ void tree_inorder_traverse_test(struct tree *t)
     printf("\ninorder traverse end <<<\n");
 }
 
+// 2.3.1. Algorithm T, exercise 13. [24]
 void tree_postorder_traverse_test(struct tree *t)
 {
     // T1. [Initialize]
@@ -249,7 +257,7 @@ void tree_postorder_traverse_test(struct tree *t)
 }
 
 #if 1
-void threaded_tree_inorder_traverse_test(struct threaded_tree *t)
+void ttree_inorder_traverse_test(struct threaded_tree *t)
 {
     // S0. [Initialize.] Set P <- HEAD (Q <- HEAD, also)
     struct threaded_tree *p = t, *q;
@@ -284,10 +292,10 @@ void threaded_tree_inorder_traverse_test(struct threaded_tree *t)
         }
     }
 
-    printf("\nthreaded tree  inorder traverse end <<<\n");
+    printf("\nthreaded tree inorder traverse end <<<\n");
 }
 #elif 0
-void threaded_tree_inorder_traverse_test(struct threaded_tree *t)
+void ttree_inorder_traverse_test(struct threaded_tree *t)
 {
     // S0. [Initialize.] Set P <- HEAD (Q <- HEAD, also)
     struct threaded_tree *p = t, *q = t;
@@ -323,7 +331,7 @@ void threaded_tree_inorder_traverse_test(struct threaded_tree *t)
     printf("\nthreaded tree  inorder traverse end <<<\n");
 }
 #elif 0
-void threaded_tree_inorder_traverse_test(struct threaded_tree *t)
+void ttree_inorder_traverse_test(struct threaded_tree *t)
 {
     // S0. [Initialize.] Set P <- HEAD (Q <- HEAD, also)
     struct threaded_tree *p = t;
@@ -356,7 +364,6 @@ void threaded_tree_inorder_traverse_test(struct threaded_tree *t)
 }
 #endif
 
-#if 1
 struct threaded_tree *ttree_inorder_successor(
     struct threaded_tree **q,
     struct threaded_tree *p)
@@ -366,10 +373,7 @@ struct threaded_tree *ttree_inorder_successor(
     if (p == NULL)
         goto EXIT;
 
-    // S1. [RLINK(P) a threaded?]
     s = p->rlink;
-    if (p->rtag)
-        goto EXIT;
 
     // S2. [Search to left.]
     while (s->ltag == 0)
@@ -390,23 +394,20 @@ struct threaded_tree *ttree_inorder_predecessor(
     if (p == NULL)
         goto EXIT;
 
-    // S1. [LLINK(P) a threaded?]
     s = p->llink;
-    if (p->ltag)
-        goto EXIT;
 
     // S2. [Search to right.]
     while (s->rtag == 0)
         s = s->rlink;
 
 EXIT:
-    // printf("(*q)->a :%c\n", tree_entry((*q), struct _tto, ttree)->a);
     if (q != NULL)
         *q = s;
     return s;
 }
 
-void threaded_tree_add_l(
+// 2.3.1. Algorithm I
+void ttree_add_l(
     struct threaded_tree *q,
     struct threaded_tree *p)
 {
@@ -425,28 +426,151 @@ void threaded_tree_add_l(
         ttree_inorder_predecessor(0, q)->rlink = q;
 }
 
-void threaded_tree_add_r(
+// 2.3.1. Algorithm I
+void ttree_add_r(
     struct threaded_tree *q,
     struct threaded_tree *p)
 {
     // I1. [Adjust tags and links]
     q->llink = p;
     q->ltag = 1;
-    // printf("q->llink->a :%c\n", tree_entry(q->llink, struct _tto, ttree)->a);
 
     q->rlink = p->rlink;
     q->rtag = p->rtag;
-    // printf("q->rlink->a :%c\n", tree_entry(q->rlink, struct _tto, ttree)->a);
 
     p->rlink = q;
     p->rtag = 0;
-    // printf("p->rlink->a :%c\n", tree_entry(p->rlink, struct _tto, ttree)->a);
 
     // I2. [Was RLINK(P) a thread?]
     if (q->rtag == 0)
         ttree_inorder_successor(0, q)->llink = q;
 }
-#endif
+
+// 2.3.1. Algorithm S
+struct right_threaded_tree *rttree_inodrer_predecessor(
+    struct right_threaded_tree **q,
+    struct right_threaded_tree *p)
+{
+    struct right_threaded_tree *s;
+
+    if (p == NULL)
+        goto EXIT;
+
+    s = p->llink;
+
+    while (s->rtag == 0)
+        s = s->rlink;
+
+EXIT:
+    if (q != NULL)
+        *q = s;
+
+    return s;
+}
+
+// 2.3.1. Algorithm S
+struct right_threaded_tree *rttree_inorder_successor(
+    struct right_threaded_tree **q,
+    struct right_threaded_tree *p)
+{
+    struct right_threaded_tree *s;
+
+    if (p == NULL)
+        goto EXIT;
+
+    s = p->rlink;
+
+    while (s->llink != NULL)
+        s = s->llink;
+
+EXIT:
+    if (q != NULL)
+        *q = s;
+
+    return s;
+}
+
+// Algorithm I, 2.3.1. exercises 23. [22]
+void rttree_add_l(
+    struct right_threaded_tree *q,
+    struct right_threaded_tree *p)
+{
+    // I1. [Adjust tags and links]
+    q->llink = p->llink;
+    // [SC] If llink point to head, llink will be NULL.
+    if (q->llink == p)
+        q->llink = NULL;
+
+    q->rlink = p;
+    q->rtag = 1;
+
+    p->llink = q;
+
+    // I2. [Was LLINK(P) a thread?]
+    if (q->llink != NULL)
+        rttree_inodrer_predecessor(0, q)->rlink = q;
+
+}
+
+// Algorithm I, 2.3.1. exercises 23. [22]
+void rttree_add_r(
+    struct right_threaded_tree *q,
+    struct right_threaded_tree *p)
+{
+    // I1. [Adjust tags and links]
+    // Since we do not have lthread, llink will be NULL here.
+    q->llink = NULL;
+
+    q->rlink = p->rlink;
+    q->rtag = p->rtag;
+
+    p->rlink = q;
+    p->rtag = 0;
+
+    // // I2. [Was RLINK(P) a thread?]
+    // And we do not need to set the llink of the successor of q.
+    // if (q->rtag == 0)
+    //     rttree_inorder_successor(0, q)->llink = q;
+}
+
+void rttree_inorder_traverse_test(struct right_threaded_tree *t)
+{
+    // S0. [Initialize.] Set P <- HEAD (Q <- HEAD, also)
+    struct right_threaded_tree *p = t, *q;
+
+    printf("\nright-threaded tree inorder traverse start >>>\n");
+
+    while (1) {
+    S2:
+        // S2. [Search to left.] Set P <- Q, Q <- LLINK(Q)
+        q = p->llink;
+        // if (p->ltag == 0) {
+        if (p->llink != NULL) {
+            p = q;
+            goto S2;
+        }
+
+    S3:
+        // S3. [Visit P.] Visit unless P = HEAD
+        if (p == t) {
+            break;
+        }
+
+        printf("%c ", tree_entry(p, struct _tto, ttree)->a);
+
+    S1:
+        // S1. [RLINK(P) a thread?]
+        q = p->rlink;
+        if (p->rtag) {
+            p = q;
+            goto S3;
+        } else {
+            p = q;
+        }
+    }
+
+    printf("\nright-threaded tree inorder traverse end <<<\n");
+}
 
 void tree_test(void)
 {
@@ -457,11 +581,11 @@ void tree_test(void)
     // TREE(too_root);
     struct tree *too_root;
 
-    /* Allocate memory space for 9 nodes */
+    // Allocate memory space for 9 nodes
     struct _too *too;
     too = malloc(sizeof(struct _too) * ELE_NUM);
 
-    /* Initialize 9 nodes */
+    // Initialize 9 nodes
     for (i = 0; i < 9; i++) {
         INIT_TREE_NODE(&too[i].tree);
         too[i].a = 'A' + i;
@@ -473,7 +597,7 @@ void tree_test(void)
     }
     printf("\n");
 
-    /* Create tree and subtree and connect them */
+    // Create tree and subtree and connect them
     too_root = &too[0].tree;
 
     // 0A 1B 2C 3D 4E 5F 6G 7H 8J
@@ -501,12 +625,13 @@ void tree_test(void)
     tree_preorder_traverse_test(too_root);
     tree_inorder_traverse_test(too_root);
     tree_postorder_traverse_test(too_root);
-#if 1
-    /* Allocate memory space for 9 nodes */
+
+    /* TEST THREADED BINARY TREE */
+    // Allocate memory space for 9 nodes
     struct _tto *tto;
     tto = malloc(sizeof(struct _tto) * ELE_NUM);
 
-    /* Initialize 9 nodes */
+    // Initialize 9 nodes
     for (i = 0; i < 9; i++) {
         INIT_TTREE_NODE(&tto[i].ttree);
         tto[i].a = 'A' + i;
@@ -518,158 +643,213 @@ void tree_test(void)
     }
     printf("\n");
 
-    /* Create tree and subtree and connect them */
+    // Create tree and subtree and connect them
     // too_root = &tto[0].tree;
     TTREE_HEAD(ttree_head);
     // T-A ($P)
-    threaded_tree_set_l(&tto[A].ttree, &ttree_head, 0);
+    ttree_set_l(&tto[A].ttree, &ttree_head, 0);
 
     // 0A 1B 2C 3D 4E 5F 6G 7H 8J
     // A-B ($P)
-    threaded_tree_set_l(&tto[B].ttree, &tto[A].ttree, 0);
+    ttree_set_l(&tto[B].ttree, &tto[A].ttree, 0);
     // A-C (P$)
-    threaded_tree_set_r(&tto[C].ttree, &tto[A].ttree, 0);
+    ttree_set_r(&tto[C].ttree, &tto[A].ttree, 0);
 
     // B-D ($P)
-    threaded_tree_set_l(&tto[D].ttree, &tto[B].ttree, 0);
+    ttree_set_l(&tto[D].ttree, &tto[B].ttree, 0);
     // B-A (P$)
-    threaded_tree_set_r(&tto[A].ttree, &tto[B].ttree, 1);
+    ttree_set_r(&tto[A].ttree, &tto[B].ttree, 1);
 
     // C-E ($P)
-    threaded_tree_set_l(&tto[E].ttree, &tto[C].ttree, 0);
+    ttree_set_l(&tto[E].ttree, &tto[C].ttree, 0);
     // C-F (P$)
-    threaded_tree_set_r(&tto[F].ttree, &tto[C].ttree, 0);
+    ttree_set_r(&tto[F].ttree, &tto[C].ttree, 0);
 
     // D-T ($P)
-    threaded_tree_set_l(&ttree_head, &tto[D].ttree, 1);
+    ttree_set_l(&ttree_head, &tto[D].ttree, 1);
     // D-B (P$)
-    threaded_tree_set_r(&tto[B].ttree, &tto[D].ttree, 1);
+    ttree_set_r(&tto[B].ttree, &tto[D].ttree, 1);
 
     // E-A ($P)
-    threaded_tree_set_l(&tto[A].ttree, &tto[E].ttree, 1);
+    ttree_set_l(&tto[A].ttree, &tto[E].ttree, 1);
     // E-G (P$)
-    threaded_tree_set_r(&tto[G].ttree, &tto[E].ttree, 0);
+    ttree_set_r(&tto[G].ttree, &tto[E].ttree, 0);
 
     // F-H ($P)
-    threaded_tree_set_l(&tto[H].ttree, &tto[F].ttree, 0);
+    ttree_set_l(&tto[H].ttree, &tto[F].ttree, 0);
     // F-J (P$)
-    threaded_tree_set_r(&tto[I].ttree, &tto[F].ttree, 0);
+    ttree_set_r(&tto[I].ttree, &tto[F].ttree, 0);
 
     // G-E ($P)
-    threaded_tree_set_l(&tto[E].ttree, &tto[G].ttree, 1);
+    ttree_set_l(&tto[E].ttree, &tto[G].ttree, 1);
     // G-C (P$)
-    threaded_tree_set_r(&tto[C].ttree, &tto[G].ttree, 1);
+    ttree_set_r(&tto[C].ttree, &tto[G].ttree, 1);
 
     // H-C ($P)
-    threaded_tree_set_l(&tto[C].ttree, &tto[H].ttree, 1);
+    ttree_set_l(&tto[C].ttree, &tto[H].ttree, 1);
     // H-F (P$)
-    threaded_tree_set_r(&tto[F].ttree, &tto[H].ttree, 1);
+    ttree_set_r(&tto[F].ttree, &tto[H].ttree, 1);
 
     // I-F ($P)
-    threaded_tree_set_l(&tto[F].ttree, &tto[I].ttree, 1);
+    ttree_set_l(&tto[F].ttree, &tto[I].ttree, 1);
     // I-T (P$)
-    threaded_tree_set_r(&ttree_head, &tto[I].ttree, 1);
+    ttree_set_r(&ttree_head, &tto[I].ttree, 1);
 
-    threaded_tree_inorder_traverse_test(&ttree_head);
+    ttree_inorder_traverse_test(&ttree_head);
 
     //
     printf("threaded tree insertion 1\n");
     INIT_TTREE_HEAD(&ttree_head);
     memset(tto, 0, sizeof(struct _tto) * ELE_NUM);
-    /* Initialize 9 nodes */
+    // Initialize 9 nodes
     for (i = 0; i < 9; i++) {
         INIT_TTREE_NODE(&tto[i].ttree);
         tto[i].a = 'A' + i;
     }
 
-    threaded_tree_add_l(&tto[A].ttree, &ttree_head);
-    threaded_tree_add_l(&tto[B].ttree, &tto[A].ttree);
-    threaded_tree_add_r(&tto[C].ttree, &tto[A].ttree);
+    ttree_add_l(&tto[A].ttree, &ttree_head);
+    ttree_add_l(&tto[B].ttree, &tto[A].ttree);
+    ttree_add_r(&tto[C].ttree, &tto[A].ttree);
 
-    threaded_tree_add_l(&tto[D].ttree, &tto[B].ttree);
+    ttree_add_l(&tto[D].ttree, &tto[B].ttree);
 
-    threaded_tree_add_l(&tto[E].ttree, &tto[C].ttree);
-    threaded_tree_add_r(&tto[F].ttree, &tto[C].ttree);
+    ttree_add_l(&tto[E].ttree, &tto[C].ttree);
+    ttree_add_r(&tto[F].ttree, &tto[C].ttree);
 
-    threaded_tree_add_r(&tto[G].ttree, &tto[E].ttree);
+    ttree_add_r(&tto[G].ttree, &tto[E].ttree);
 
-    threaded_tree_add_l(&tto[H].ttree, &tto[F].ttree);
-    threaded_tree_add_r(&tto[I].ttree, &tto[F].ttree);
+    ttree_add_l(&tto[H].ttree, &tto[F].ttree);
+    ttree_add_r(&tto[I].ttree, &tto[F].ttree);
 
-    threaded_tree_inorder_traverse_test(&ttree_head);
+    ttree_inorder_traverse_test(&ttree_head);
 
     //
     printf("threaded tree insertion 2\n");
     INIT_TTREE_HEAD(&ttree_head);
     memset(tto, 0, sizeof(struct _tto) * ELE_NUM);
-    /* Initialize 9 nodes */
+    // Initialize 9 nodes
     for (i = 0; i < 9; i++) {
         INIT_TTREE_NODE(&tto[i].ttree);
         tto[i].a = 'A' + i;
     }
 
-    threaded_tree_add_l(&tto[A].ttree, &ttree_head);
-    threaded_tree_add_l(&tto[B].ttree, &tto[A].ttree);
-    threaded_tree_add_l(&tto[D].ttree, &tto[B].ttree);
+    ttree_add_l(&tto[A].ttree, &ttree_head);
+    ttree_add_l(&tto[B].ttree, &tto[A].ttree);
+    ttree_add_l(&tto[D].ttree, &tto[B].ttree);
+    ttree_add_r(&tto[C].ttree, &tto[A].ttree);
+    ttree_add_r(&tto[F].ttree, &tto[C].ttree);
+    ttree_add_r(&tto[I].ttree, &tto[F].ttree);
+    ttree_add_l(&tto[E].ttree, &tto[C].ttree);
+    ttree_add_r(&tto[G].ttree, &tto[E].ttree);
+    ttree_add_l(&tto[H].ttree, &tto[F].ttree);
 
-    threaded_tree_add_r(&tto[C].ttree, &tto[A].ttree);
-    threaded_tree_add_r(&tto[F].ttree, &tto[C].ttree);
-    threaded_tree_add_r(&tto[I].ttree, &tto[F].ttree);
-
-    threaded_tree_add_l(&tto[E].ttree, &tto[C].ttree);
-    threaded_tree_add_r(&tto[G].ttree, &tto[E].ttree);
-
-    threaded_tree_add_l(&tto[H].ttree, &tto[F].ttree);
-
-    threaded_tree_inorder_traverse_test(&ttree_head);
+    ttree_inorder_traverse_test(&ttree_head);
 
     //
     printf("threaded tree insertion 3\n");
     INIT_TTREE_HEAD(&ttree_head);
     memset(tto, 0, sizeof(struct _tto) * ELE_NUM);
-    /* Initialize 9 nodes */
+    // Initialize 9 nodes
     for (i = 0; i < 9; i++) {
         INIT_TTREE_NODE(&tto[i].ttree);
         tto[i].a = 'A' + i;
     }
 
-    // printf("\nAdd A\n");
-    threaded_tree_add_l(&tto[A].ttree, &ttree_head);
-    // PRINT_TTO_NODE(A);
+    ttree_add_l(&tto[A].ttree, &ttree_head);
+    ttree_add_l(&tto[D].ttree, &tto[A].ttree);
+    ttree_add_r(&tto[I].ttree, &tto[A].ttree);
+    ttree_add_r(&tto[F].ttree, &tto[A].ttree);
+    ttree_add_l(&tto[H].ttree, &tto[F].ttree);
+    ttree_add_r(&tto[C].ttree, &tto[A].ttree);
+    ttree_add_l(&tto[E].ttree, &tto[C].ttree);
+    ttree_add_r(&tto[G].ttree, &tto[E].ttree);
+    ttree_add_l(&tto[B].ttree, &tto[A].ttree);
 
-    // printf("\nAdd D\n");
-    threaded_tree_add_l(&tto[D].ttree, &tto[A].ttree);
-    // PRINT_TTO_NODE(A);
-    // PRINT_TTO_NODE(D);
+    ttree_inorder_traverse_test(&ttree_head);
 
-    // printf("\nAdd I\n");
-    threaded_tree_add_r(&tto[I].ttree, &tto[A].ttree);
-    // PRINT_TTO_NODE(A);
-    // PRINT_TTO_NODE(D);
-    // PRINT_TTO_NODE(I);
+    // Verify exercises 23. [22]
+    /* TEST RIGHT-THREADED BINARY TREE */
+    struct _rtto *rtto;
 
-    // printf("\nAdd F\n");
-    threaded_tree_add_r(&tto[F].ttree, &tto[A].ttree);
-    // PRINT_TTO_NODE(A);
-    // PRINT_TTO_NODE(D);
-    // PRINT_TTO_NODE(F);
-    // PRINT_TTO_NODE(I);
+    rtto = malloc(sizeof(struct _rtto) * ELE_NUM);
+    memset(rtto, 0, sizeof(struct _rtto) * ELE_NUM);
+    for (i = 0; i < 9; i++) {
+        INIT_RTTREE_NODE(&rtto[i].rttree);
+        rtto[i].a = 'A' + i;
+    }
 
-    threaded_tree_add_l(&tto[H].ttree, &tto[F].ttree);
+    for (i = 0; i < 9; i++) {
+        printf("%c ", tree_entry(&rtto[i].rttree, struct _tto, ttree)->a);
+    }
+    printf("\n");
 
-    threaded_tree_add_r(&tto[C].ttree, &tto[A].ttree);
+    //
+    printf("right-threaded tree insertion 1\n");
 
-    threaded_tree_add_l(&tto[E].ttree, &tto[C].ttree);
-    threaded_tree_add_r(&tto[G].ttree, &tto[E].ttree);
+    struct right_threaded_tree rttree_head;
+    INIT_RTTREE_HEAD(&rttree_head);
 
-    threaded_tree_add_l(&tto[B].ttree, &tto[A].ttree);
+    rttree_add_l(&rtto[A].rttree, &rttree_head);
+    rttree_add_l(&rtto[B].rttree, &rtto[A].rttree);
+    rttree_add_r(&rtto[C].rttree, &rtto[A].rttree);
+    rttree_add_l(&rtto[D].rttree, &rtto[B].rttree);
+    rttree_add_l(&rtto[E].rttree, &rtto[C].rttree);
+    rttree_add_r(&rtto[F].rttree, &rtto[C].rttree);
+    rttree_add_r(&rtto[G].rttree, &rtto[E].rttree);
+    rttree_add_l(&rtto[H].rttree, &rtto[F].rttree);
+    rttree_add_r(&rtto[I].rttree, &rtto[F].rttree);
+    // PRINT_RTTO_NODE(A);
+    // PRINT_RTTO_NODE(C);
 
-    threaded_tree_inorder_traverse_test(&ttree_head);
+    rttree_inorder_traverse_test(&rttree_head);
 
-#endif
+    //
+    printf("threaded tree insertion 2\n");
+    INIT_RTTREE_HEAD(&rttree_head);
+    memset(rtto, 0, sizeof(struct _rtto) * ELE_NUM);
+    // Initialize 9 nodes
+    for (i = 0; i < 9; i++) {
+        INIT_RTTREE_NODE(&rtto[i].rttree);
+        rtto[i].a = 'A' + i;
+    }
+
+    rttree_add_l(&rtto[A].rttree, &rttree_head);
+    rttree_add_l(&rtto[B].rttree, &rtto[A].rttree);
+    rttree_add_l(&rtto[D].rttree, &rtto[B].rttree);
+    rttree_add_r(&rtto[C].rttree, &rtto[A].rttree);
+    rttree_add_r(&rtto[F].rttree, &rtto[C].rttree);
+    rttree_add_r(&rtto[I].rttree, &rtto[F].rttree);
+    rttree_add_l(&rtto[E].rttree, &rtto[C].rttree);
+    rttree_add_r(&rtto[G].rttree, &rtto[E].rttree);
+    rttree_add_l(&rtto[H].rttree, &rtto[F].rttree);
+
+    rttree_inorder_traverse_test(&rttree_head);
+
+    //
+    printf("threaded tree insertion 3\n");
+    INIT_RTTREE_HEAD(&rttree_head);
+    memset(rtto, 0, sizeof(struct _rtto) * ELE_NUM);
+    // Initialize 9 nodes
+    for (i = 0; i < 9; i++) {
+        INIT_RTTREE_HEAD(&rtto[i].rttree);
+        rtto[i].a = 'A' + i;
+    }
+
+    rttree_add_l(&rtto[A].rttree, &rttree_head);
+    rttree_add_l(&rtto[D].rttree, &rtto[A].rttree);
+    rttree_add_r(&rtto[I].rttree, &rtto[A].rttree);
+    rttree_add_r(&rtto[F].rttree, &rtto[A].rttree);
+    rttree_add_l(&rtto[H].rttree, &rtto[F].rttree);
+    rttree_add_r(&rtto[C].rttree, &rtto[A].rttree);
+    rttree_add_l(&rtto[E].rttree, &rtto[C].rttree);
+    rttree_add_r(&rtto[G].rttree, &rtto[E].rttree);
+    rttree_add_l(&rtto[B].rttree, &rtto[A].rttree);
+
+    rttree_inorder_traverse_test(&rttree_head);
 
     free(too);
     free(tto);
+    free(rtto);
 
     return;
 }
