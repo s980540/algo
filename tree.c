@@ -495,6 +495,45 @@ void ttree_add_r(
         ttree_inorder_successor(0, q)->llink = q;
 }
 
+// Algorithm C
+void ttree_copy(
+    struct threaded_tree *u,
+    struct threaded_tree *t)
+{
+    struct threaded_tree *p, *q;
+    // C1. [Initiailize]
+    p = t;
+    q = u;
+
+    while (1) {
+        // C4. [Anything to left?]
+        if (p->ltag == 0) {
+            struct _tto *r = malloc(sizeof(struct _tto));
+            INIT_TTREE_NODE(&r->ttree);
+            ttree_add_l(&r->ttree, q);
+        }
+
+        // C5. [Advance.]
+        p = ttree_preorder_successor(0, p);
+        q = ttree_preorder_successor(0, q);
+
+        // C6. [Test if complete.]
+        // if (p == t)
+        if (q == u->rlink)
+            break;
+
+        // C2. [Anything to right?]
+        if (p->rtag == 0) {
+            struct _tto *r = malloc(sizeof(struct _tto));
+            INIT_TTREE_NODE(&r->ttree);
+            ttree_add_r(&r->ttree, q);
+        }
+
+        // C3. [Copy INFO.]
+        tree_entry(q, struct _tto, ttree)->a = tree_entry(p, struct _tto, ttree)->a;
+    }
+}
+
 // 2.3.1. Algorithm S
 struct right_threaded_tree *rttree_inodrer_predecessor(
     struct right_threaded_tree **q,
@@ -818,7 +857,9 @@ void tree_test(void)
 
     //
     printf("\nthreaded tree insertion 4\n");
+    TTREE_HEAD(ttree_head2);
     INIT_TTREE_HEAD(&ttree_head);
+    INIT_TTREE_HEAD(&ttree_head2);
     memset(tto, 0, sizeof(struct _tto) * ELE_NUM);
     // Initialize 9 nodes
     for (i = 0; i < 9; i++) {
@@ -826,6 +867,7 @@ void tree_test(void)
         tto[i].a = 'A' + i;
     }
 
+    ttree_add_l(&tto[A].ttree, &ttree_head);
     ttree_add_l(&tto[D].ttree, &tto[A].ttree);
     ttree_add_r(&tto[I].ttree, &tto[A].ttree);
     ttree_add_r(&tto[F].ttree, &tto[A].ttree);
@@ -835,19 +877,13 @@ void tree_test(void)
     ttree_add_r(&tto[G].ttree, &tto[E].ttree);
     ttree_add_l(&tto[B].ttree, &tto[A].ttree);
 
-    // ttree_add_l(&tto[A].ttree, &ttree_head);
+    ttree_copy(&ttree_head2, &ttree_head);
 
-    // ttree_preorder_traverse_test(&ttree_head);
-    // ttree_inorder_traverse_test(&ttree_head);
+    ttree_preorder_traverse_test(&ttree_head);
+    ttree_preorder_traverse_test(&ttree_head2);
 
-    ttree_preorder_traverse_test(&tto[A].ttree);
-    ttree_inorder_traverse_test(&tto[A].ttree);
-
-    ttree_preorder_traverse_test(&tto[D].ttree);
-    ttree_inorder_traverse_test(&tto[D].ttree);
-
-    ttree_preorder_traverse_test(&tto[C].ttree);
-    ttree_inorder_traverse_test(&tto[C].ttree);
+    ttree_inorder_traverse_test(&ttree_head);
+    ttree_inorder_traverse_test(&ttree_head2);
 
     // Verify exercises 23. [22]
     /* TEST RIGHT-THREADED BINARY TREE */
