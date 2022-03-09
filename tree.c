@@ -364,11 +364,56 @@ void ttree_inorder_traverse_test(struct threaded_tree *t)
 }
 #endif
 
+// 2.3.1. Algorithm S, exercise 17.[22]
+struct threaded_tree *ttree_preorder_successor(
+    struct threaded_tree **q,
+    struct threaded_tree *p)
+{
+    struct threaded_tree *s = NULL;
+
+    if (p == NULL)
+        goto EXIT;
+
+    s = p->llink;
+    if (p->ltag == 0)
+        goto EXIT;
+
+    // [Search through thread]
+    s = p;
+    while (s->rtag)
+        s = s->rlink;
+
+    s = s->rlink;
+
+EXIT:
+    if (q != NULL)
+        *q = s;
+    return s;
+}
+
+void ttree_preorder_traverse_test(struct threaded_tree *t)
+{
+    struct threaded_tree *p = t;
+
+    printf("\nthreaded tree preorder traverse start >>>\n");
+
+    while (1) {
+        p = ttree_preorder_successor(0, p);
+        if (p == t)
+            break;
+        else
+            printf("%c ", tree_entry(p, struct _tto, ttree)->a);
+    }
+    printf("\n");
+
+    printf("\nthreaded tree preorder traverse end <<<\n");
+}
+
 struct threaded_tree *ttree_inorder_successor(
     struct threaded_tree **q,
     struct threaded_tree *p)
 {
-    struct threaded_tree *s;
+    struct threaded_tree *s = NULL;
 
     if (p == NULL)
         goto EXIT;
@@ -385,11 +430,12 @@ EXIT:
     return s;
 }
 
+// 2.3.1. Algorithm S
 struct threaded_tree *ttree_inorder_predecessor(
     struct threaded_tree **q,
     struct threaded_tree *p)
 {
-    struct threaded_tree *s;
+    struct threaded_tree *s = NULL;
 
     if (p == NULL)
         goto EXIT;
@@ -451,7 +497,7 @@ struct right_threaded_tree *rttree_inodrer_predecessor(
     struct right_threaded_tree **q,
     struct right_threaded_tree *p)
 {
-    struct right_threaded_tree *s;
+    struct right_threaded_tree *s = NULL;
 
     if (p == NULL)
         goto EXIT;
@@ -473,7 +519,7 @@ struct right_threaded_tree *rttree_inorder_successor(
     struct right_threaded_tree **q,
     struct right_threaded_tree *p)
 {
-    struct right_threaded_tree *s;
+    struct right_threaded_tree *s = NULL;
 
     if (p == NULL)
         goto EXIT;
@@ -695,6 +741,7 @@ void tree_test(void)
     // I-T (P$)
     ttree_set_r(&ttree_head, &tto[I].ttree, 1);
 
+    ttree_preorder_traverse_test(&ttree_head);
     ttree_inorder_traverse_test(&ttree_head);
 
     //
@@ -721,6 +768,7 @@ void tree_test(void)
     ttree_add_l(&tto[H].ttree, &tto[F].ttree);
     ttree_add_r(&tto[I].ttree, &tto[F].ttree);
 
+    ttree_preorder_traverse_test(&ttree_head);
     ttree_inorder_traverse_test(&ttree_head);
 
     //
@@ -743,6 +791,7 @@ void tree_test(void)
     ttree_add_r(&tto[G].ttree, &tto[E].ttree);
     ttree_add_l(&tto[H].ttree, &tto[F].ttree);
 
+    ttree_preorder_traverse_test(&ttree_head);
     ttree_inorder_traverse_test(&ttree_head);
 
     //
@@ -765,6 +814,7 @@ void tree_test(void)
     ttree_add_r(&tto[G].ttree, &tto[E].ttree);
     ttree_add_l(&tto[B].ttree, &tto[A].ttree);
 
+    ttree_preorder_traverse_test(&ttree_head);
     ttree_inorder_traverse_test(&ttree_head);
 
     // Verify exercises 23. [22]
