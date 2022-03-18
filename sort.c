@@ -28,9 +28,9 @@ typedef void (*PSORT_FUNC)(void *base, size_t num, size_t size, PCOMPARE_FUNC co
 static char _dummy[DUMMY_SIZE];
 static u64 u64_dummy;
 
-static int is_alignment(const void *base, int align);
+int is_alignment(const void *base, int align);
 
-static int is_alignment(const void *base, int align)
+int is_alignment(const void *base, int align)
 {
     return ((u32)base & (align - 1)) == 0;
 }
@@ -76,9 +76,8 @@ void generic_assign(void *a, void *b, size_t size)
     }
 }
 
-int int_comp(const void *a, const void *b, size_t size)
+static int int_comp(const void *a, const void *b, size_t size)
 {
-    // printf("int_comp %d %5d %5d\n", *(int *)a > *(int *)b, *(int *)a, *(int *)b);
     return *(int *)a - *(int *)b;
 }
 
@@ -116,8 +115,9 @@ void quick_sort_r(
     }
 }
 
-static void max_heapify(
+void max_heapify(
     void *base,
+    void *ibase,
     size_t idx,
     size_t num,
     size_t size,
@@ -136,12 +136,15 @@ static void max_heapify(
 
     if (largest != idx) {
         swap(base + idx * size, base + largest * size, size);
-        max_heapify(base, largest, num, size, comp, swap);
+        if (ibase)
+            swap(ibase + idx * size, ibase + largest * size, size);
+        max_heapify(base, ibase, largest, num, size, comp, swap);
     }
 }
 
-static void build_max_heap(
+void build_max_heap(
     void *base,
+    void *ibase,
     size_t num,
     size_t size,
     PCOMPARE_FUNC comp,
@@ -149,7 +152,7 @@ static void build_max_heap(
 {
     size_t i;
     for (i = (num - 1) >> 1; ; i--) {
-        max_heapify(base, i, num, size, comp, swap);
+        max_heapify(base, ibase, i, num, size, comp, swap);
         if (i == 0)
             break;
     }
@@ -157,6 +160,7 @@ static void build_max_heap(
 
 void heap_sort(
     void *base,
+    void *ibase,
     size_t num,
     size_t size,
     PCOMPARE_FUNC comp,
@@ -174,12 +178,14 @@ void heap_sort(
     }
 
     // using bottom-up manner to covert A into a max-heap
-    build_max_heap(base, num, size, comp, swap);
+    build_max_heap(base, ibase, num, size, comp, swap);
 
     for (i = num - 1; i > 0; i--) {
         swap(base, base + i * size, size);
+        if (ibase)
+            swap(ibase, ibase + i * size, size);
         num = num - 1;              // decrease heap size;
-        max_heapify(base, 0, num, size, comp, swap);
+        max_heapify(base, ibase, 0, num, size, comp, swap);
     }
 
 }
@@ -192,8 +198,9 @@ static void *heap_maximum(void *base)
     return base;
 }
 
-static void *heap_extract_max(
+void *heap_extract_max(
     void *base,
+    void *ibase,
     size_t size,
     PCOMPARE_FUNC comp,
     PSWAP_FUNC swap)
@@ -202,8 +209,10 @@ static void *heap_extract_max(
         return NULL;
 
     swap(base, base + (_heap_size - 1) * size, size);
+    if (ibase)
+        swap(ibase, ibase + (_heap_size - 1) * size, size);
     _heap_size--;
-    max_heapify(base, 0, _heap_size, size, comp, swap);
+    max_heapify(base, ibase, 0, _heap_size, size, comp, swap);
 
     return base + _heap_size * size;
 }
@@ -417,7 +426,10 @@ void *binary_search(void *base, void *key, size_t size, size_t num, PCOMPARE_FUN
     int result;
 
     while (mid >= lower && upper >= mid) {
+
         result = comp(key, base + mid * size, size);
+        if ((result < 0) && (mid == 0))
+            return NULL;
 
         if (result == 0)
             return base + mid * size;
@@ -449,7 +461,7 @@ void heap_sort_test(int num)
 
     SORT_PRINT_ARRAY(a, num, 5);
 
-    heap_sort(a, num, sizeof(*a), int_comp, NULL);
+    heap_sort(a, 0, num, sizeof(*a), int_comp, NULL);
     merge_sort(b, num, sizeof(*b), int_comp, NULL);
     insertion_sort(c, num, sizeof(*c), int_comp, NULL);
 
@@ -500,7 +512,7 @@ void max_heap_insert_test(int num)
     SORT_PRINT_ARRAY(a, num, 5);
 
     for (i = 0; i < num; i++) {
-        b[i] = *(int *)heap_extract_max(a, sizeof(*a), int_comp, u32_swap);
+        b[i] = *(int *)heap_extract_max(a, 0, sizeof(*a), int_comp, u32_swap);
         SORT_PRINT_ARRAY(a, num, 5);
 
         // SORT_ASSERT(b[i] <= max);
