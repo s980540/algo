@@ -21,32 +21,32 @@
     #define TREE_ASSERT(cond)
 #endif
 
-struct tree {
-    struct tree *llink, *rlink;
+struct _tree {
+    struct _tree *llink, *rlink;
 };
 
-struct threaded_tree {
+struct _threaded_tree {
+    struct _threaded_tree *llink, *rlink;
     struct {
         u8 ltag : 1;
         u8 rtag : 1;
     };
-    struct threaded_tree *llink, *rlink;
 };
 
-struct right_threaded_tree {
+struct _right_threaded_tree {
+    struct _right_threaded_tree *llink, *rlink;
     u8 rtag;
-    struct right_threaded_tree *llink, *rlink;
 };
 
 #define TTREE_HEAD_INIT(name)    {.ltag = 1, .rtag = 0, .llink = &(name), .rlink = &(name)}
 
 #define TTREE_HEAD(name) \
-    struct threaded_tree name = TTREE_HEAD_INIT(name)
+    struct _threaded_tree name = TTREE_HEAD_INIT(name)
 
 #define RTTREE_HEAD_INIT(name)  {.rtag = 0, .llink = &(name), .rlink = &(name)}
 
 #define RTTREE_HEAD(name) \
-    struct right_threaded_tree name = RTTREE_HEAD_INIT(name)
+    struct _right_threaded_tree name = RTTREE_HEAD_INIT(name)
 
 #define tree_entry(ptr, type, member) \
     ((type *)( (char *)(ptr) - ((size_t)&((type *)0)->member) ))
@@ -57,6 +57,9 @@ struct right_threaded_tree {
 #define PRINT_RTTO_NODE(name) \
     _PRINT_RTTREE_NODE_INFO(&rttree_head, rtto, name, struct _rtto, rttree, a)
 
+#define PRINT_RTTO_NODE2(p) \
+    _PRINT_RTTREE_NODE_INFO2(&rttree_head, p, p, struct _rtto, rttree, a)
+
 #define _PRINT_TTREE_NODE_INFO(head, p, index, type, member, data) \
     printf("\n" #index "->ltag %d\n", ((p)[index]).member.ltag); \
     printf(#index "->llink %c\n", ((p)[index]).member.llink == (head) ? 'H' : tree_entry(((p)[index]).member.llink, type, member)->data); \
@@ -66,30 +69,42 @@ struct right_threaded_tree {
 #define _PRINT_RTTREE_NODE_INFO(head, p, index, type, member, data) \
     printf("\n" #index "->llink %c\n", (((p)[index]).member.llink == (head)) ? 'H' : (((p)[index]).member.llink == NULL) ? 'N' : tree_entry(((p)[index]).member.llink, type, member)->data); \
     printf(#index "->rtag %d\n", ((p)[index]).member.rtag); \
-    printf(#index "->rlink %c\n", ((p)[index]).member.rlink == (head) ? 'H' : tree_entry(((p)[index]).member.rlink, type, member)->data);
+    printf(#index "->rlink %c\n", (((p)[index]).member.rlink == (head)) ? 'H' : (((p)[index]).member.rlink == NULL) ? 'N' : tree_entry(((p)[index]).member.rlink, type, member)->data);
 
-static inline void INIT_TTREE_HEAD(struct threaded_tree *ttree)
+#define _PRINT_RTTREE_NODE_INFO2(head, p, name, type, member, data) \
+    printf("\n" #name "->llink %c\n", ((p)->llink == (head)) ? 'H' : ((p)->llink == NULL) ? 'N' : tree_entry((p)->llink, type, member)->data); \
+    printf(#name "->rtag %d\n", (p)->rtag); \
+    printf(#name "->rlink %c\n", ((p)->rlink == (head)) ? 'H' : ((p)->rlink == NULL) ? 'N' : tree_entry((p)->rlink, type, member)->data);
+
+static inline void INIT_TTREE_HEAD(struct _threaded_tree *ttree)
 {
     ttree->llink = ttree;
     ttree->ltag = 1;
     ttree->rlink = ttree;
-    ttree->rtag = 0;
+    ttree->rtag = 1;
 }
 
-static inline void INIT_RTTREE_HEAD(struct right_threaded_tree *rttree)
+static inline void INIT_RTTREE_HEAD(struct _right_threaded_tree *rttree)
 {
-    rttree->llink = rttree;
+    rttree->llink = NULL;
     rttree->rlink = rttree;
-    rttree->rtag = 0;
+    rttree->rtag = 1;
 }
 
-static inline void INIT_TREE_NODE(struct tree *tree)
+static inline void INIT_RTTREE_NODE(struct _right_threaded_tree *tree)
+{
+    tree->rtag = 1;
+    tree->llink = NULL;
+    tree->rlink = NULL;
+}
+
+static inline void INIT_TREE_NODE(struct _tree *tree)
 {
     tree->llink = NULL;
     tree->rlink = NULL;
 }
 
-static inline void INIT_TTREE_NODE(struct threaded_tree *tree)
+static inline void INIT_TTREE_NODE(struct _threaded_tree *tree)
 {
     tree->ltag = 1;
     tree->rtag = 1;
@@ -97,30 +112,23 @@ static inline void INIT_TTREE_NODE(struct threaded_tree *tree)
     tree->rlink = NULL;
 }
 
-static inline void INIT_RTTREE_NODE(struct right_threaded_tree *tree)
-{
-    tree->rtag = 1;
-    tree->llink = NULL;
-    tree->rlink = NULL;
-}
-
 static inline void tree_add_l(
-    struct tree *child,
-    struct tree *parent)
+    struct _tree *child,
+    struct _tree *parent)
 {
     parent->llink = child;
 }
 
 static inline void tree_add_r(
-    struct tree *child,
-    struct tree *parent)
+    struct _tree *child,
+    struct _tree *parent)
 {
     parent->rlink = child;
 }
 
 static inline void ttree_set_l(
-    struct threaded_tree *child,
-    struct threaded_tree *parent,
+    struct _threaded_tree *child,
+    struct _threaded_tree *parent,
     u8 tag)
 {
     parent->llink = child;
@@ -128,8 +136,8 @@ static inline void ttree_set_l(
 }
 
 static inline void ttree_set_r(
-    struct threaded_tree *child,
-    struct threaded_tree *parent,
+    struct _threaded_tree *child,
+    struct _threaded_tree *parent,
     u8 tag)
 {
     parent->rlink = child;
@@ -139,5 +147,6 @@ static inline void ttree_set_r(
 ret_code menu_func_tree(int argc, char **argv);
 
 void tree_test(void);
+void tree_differentiation_test(void);
 
 #endif
