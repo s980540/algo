@@ -56,7 +56,8 @@
             "deque": "c",
             "random": "c",
             "algorithm": "c",
-            "tree.h": "c"
+            "tree.h": "c",
+            "test": "c"
         }
 	}
 }
