@@ -148,5 +148,5 @@ ret_code menu_func_tree(int argc, char **argv);
 
 void tree_test(void);
 void tree_differentiation_test(void);
-
+void tree_differentiation_r_test(void);
 #endif

@@ -4,7 +4,8 @@ typedef enum _OPT_CODE_TREE
 {
     OPT_CODE_TREE_HELP = 0,
     OPT_CODE_TREE_DEMO = 1,
-    OPT_CODE_TREE_DIFF
+    OPT_CODE_TREE_DIFF,
+    OPT_CODE_TREE_DIFFR
 } OPT_CODE_TREE;
 
 static const struct _MENU_OPTION tree_options[] =
@@ -12,6 +13,7 @@ static const struct _MENU_OPTION tree_options[] =
     {"--help", OPT_CODE_TREE_HELP, '-', "Display this summary"},
     {"--demo", OPT_CODE_TREE_DEMO, '-', "Demo tree algorithm"},
     {"--diff", OPT_CODE_TREE_DIFF, '-', "Demo derivative of formula"},
+    {"--diffr", OPT_CODE_TREE_DIFFR, '-', "Demo derivative of formula"},
 
     {NULL}
 };
@@ -56,6 +58,10 @@ ret_code menu_func_tree(int argc, char **argv)
 
         case OPT_CODE_TREE_DIFF:
             tree_differentiation_test();
+            break;
+
+        case OPT_CODE_TREE_DIFFR:
+            tree_differentiation_r_test();
             break;
 
         default:
@@ -121,6 +127,18 @@ void *alge_tree_alloc2(const void *x, void *u, void *v);
 void *alge_tree_alloc1(const void *x, void *u, void *v);
 void *alge_tree_alloc(const void *x, void *u, void *v);
 void alge_print_symbol(void *q, void *p);
+PALGEBRA_SYMBOL _differentiation_r(
+    PALGEBRA_SYMBOL y,
+    PTREE_INFO_COPY_FUNC _tree_info_copy,
+    PTREE_ALLOC_FUNC _tree_alloc,
+    PTREE_COPY_FUNC _tree_copy);
+PALGEBRA_SYMBOL _differentiation2(
+    int type,
+    PALGEBRA_SYMBOL p1,
+    PALGEBRA_SYMBOL p2,
+    PTREE_INFO_COPY_FUNC _tree_info_copy,
+    PTREE_ALLOC_FUNC _tree_alloc,
+    PTREE_COPY_FUNC _tree_copy);
 
 void rttree_preorder_traverse_test(
     struct _right_threaded_tree *t,
@@ -1477,7 +1495,7 @@ static const struct _algebra_symbol alge_symbols[] = {
 #define ALGE_A      (alge_symbols + 12)
 #define ALGE_VARY   (alge_symbols + 13)
 
-#define DIFF(x)                     differentiation(x, _tree_info_copy, _tree_alloc, _tree_copy)
+#define DIFF(x)                     _differentiation_r(x, _tree_info_copy, _tree_alloc, _tree_copy)
 #define MUL(u, v)                   multiple(u, v, _tree_alloc)
 #define ALGE_COPY(s)                tree_entry(_tree_copy(0, &(s->tree), _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree)
 #define ALGES(x)                    tree_entry(x, ALGEBRA_SYMBOL, tree)
@@ -1567,50 +1585,77 @@ PALGEBRA_SYMBOL multiple(
     return _tree_alloc(ALGE_MUL, &u->tree, &v->tree);
 }
 
-PALGEBRA_SYMBOL differentiation(
+// Algorithm D
+// Differentiation
+PALGEBRA_SYMBOL differentiation_r(
+    PALGEBRA_SYMBOL y,
+    PTREE_INFO_COPY_FUNC _tree_info_copy,
+    PTREE_ALLOC_FUNC _tree_alloc,
+    PTREE_COPY_FUNC _tree_copy)
+{
+    PALGEBRA_SYMBOL dy, p, p2;
+
+    if (y == NULL)
+        return NULL;
+
+    // D1. [Initialize.]
+    p  = ALGE(S, rttree_preorder_successor(0, &y->tree));
+
+    // D2. [Differentiate.]
+    dy = ALGE(1, ALGE_VARX, _differentiation_r(p, _tree_info_copy, _tree_alloc, _tree_copy));
+
+    return dy;
+}
+
+PALGEBRA_SYMBOL _differentiation_r(
     PALGEBRA_SYMBOL p,
     PTREE_INFO_COPY_FUNC _tree_info_copy,
     PTREE_ALLOC_FUNC _tree_alloc,
     PTREE_COPY_FUNC _tree_copy)
 {
+    // p1 <- u, p2 <-v, q1 <- D(u), q <- D(v)
     PALGEBRA_SYMBOL q, q1, p1, p2, c1, c2;
-    int type = -1;
+    // for debug
+    // int type = -1;
 
     if (p == NULL)
         return NULL;
 
-    printf("DIFF[%d]\n", p->type);
-    alge_print_symbol(&p->tree, &type);
+    // printf("DIFF[%d]\n", p->type);
+    // alge_print_symbol(&p->tree, &type);
 
     switch (p->type) {
     case 0:
         q = _tree_alloc(ALGE_ZERO, 0, 0);
         break;
+
     case 1:
         // q = _tree_alloc(strcmp(p->info, "x") == 0 ? ALGE_ONE : ALGE_ZERO, 0, 0);
         q = _tree_alloc(p->type == 1 ? ALGE_ONE : ALGE_ZERO, 0, 0);
         break;
+
     case 2:
         // p1 <- u, q <- D(u)
-        p1 = tree_entry(p->tree.llink, ALGEBRA_SYMBOL, tree);
-        // alge_print_symbol(&p->tree, &type);
-        // alge_print_symbol(p1, &type);
-        // alge_print_symbol(p1->tree.llink, &type);
-        q  = DIFF(p1);
         // info(q) != 0 ? q' <- D(u) / u = q / copy(p1)
+        p1 = tree_entry(p->tree.llink, ALGEBRA_SYMBOL, tree);
+        q  = DIFF(p1);
+
         if (memcmp(q->info, alge_zero, 6))
-            // q = _tree_alloc(ALGE_DIV, &q->tree, _tree_copy(0, &p1->tree, _tree_info_copy, _tree_alloc));
             q = ALGE(2, ALGE_DIV, q, ALGE_COPY(p1));
-            // q = ALGE(2, ALGE_DIV, q, ALGE_COPY(p));
+
         break;
+
     case 3:
         // p1 <- u, q <- D(u)
+        // info(q) != 0 ? q' <- -D(u) = -q
         p1 = tree_entry(p->tree.llink, ALGEBRA_SYMBOL, tree);
         q = DIFF(p1);
-        // info(q) != 0 ? q' <- -D(u) = -q
+
         if (memcmp(q->info, alge_zero, 6))
             q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+
         break;
+
     case 4:
         // q' <- D(u + v) = D(u) + D(v)
         // p1 <- u, p2 <-v, q1 <- D(u), q <- D(v)
@@ -1618,18 +1663,22 @@ PALGEBRA_SYMBOL differentiation(
         p2 = tree_entry(p->tree.llink->rlink, ALGEBRA_SYMBOL, tree);
         q1 = DIFF(p1);
         q  = DIFF(p2);
+
         // info(q1) = 0 ? q' <- 0 + D(v) = D(q)
+        // info(q)  = 0 ? q' <- D(u) + 0 = D(q1)
+        // q' <- D(u) + D(v) = D(q1) + D(q)
         if (memcmp(q1->info, alge_zero, 6) == 0) {
             free(q1);
-        // info(q)  = 0 ? q' <- D(u) + 0 = D(q1)
+
         } else if (memcmp(q->info, alge_zero, 6) == 0) {
             free(q);
             q = q1;
-        // q' <- D(u) + D(v) = D(q1) + D(q)
         } else {
             q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
         }
+
         break;
+
     case 5:
         // q' <- D(u - v) = D(u) - D(v)
         // p1 <- u, p2 <-v, q1 <- D(u), q <- D(v)
@@ -1637,18 +1686,21 @@ PALGEBRA_SYMBOL differentiation(
         p2 = tree_entry(p->tree.llink->rlink, ALGEBRA_SYMBOL, tree);
         q1 = DIFF(p1);
         q  = DIFF(p2);
+
         // info(q)  = 0 ? q' <- D(u) - 0 = D(q1)
+        // info(q1) = 0 ? q' <- 0 - D(v) = -D(q)
+        // q' <- D(u) + D(v) = D(q1) - D(q)
         if (memcmp(q->info, alge_zero, 6) == 0) {
             free(q);
             q = q1;
-        // info(q1) = 0 ? q' <- 0 - D(v) = -D(q)
         } else if (memcmp(q1->info, alge_zero, 6) == 0) {
             free(q1);
             q = _tree_alloc(ALGE_NEG, &q->tree, 0);
-        // q' <- D(u) + D(v) = D(q1) - D(q)
         } else
             q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
+
         break;
+
     case 6:
         // q' <- D(u * v) = D(u) * v + u * D(v)
         // p1 <- u, p2 <-v, q1 <- D(u), q <- D(v)
@@ -1658,28 +1710,31 @@ PALGEBRA_SYMBOL differentiation(
         q  = DIFF(p2);
 
         // info(q1) = 0 ? q1' <- D(u) * v
+        // info(q)  = 0 ? q' <- u * D(v)
         if (memcmp(q1->info, alge_zero, 6)) {
             c1 = tree_entry(_tree_copy(0, &p2->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
             q1 = multiple(q1, c1, _tree_alloc);
         }
-        // info(q)  = 0 ? q' <- u * D(v)
+
         if (memcmp(q->info, alge_zero, 6)) {
             c1 = tree_entry(_tree_copy(0, &p1->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
             q = multiple(c1, q, _tree_alloc);
         }
 
         // info(q1) = 0 ? q' <- 0 + u * D(v)
+        // info(q)  = 0 ? q' <- D(u) * v + 0
+        // q' <- D(u) * v + u * D(v)
         if (memcmp(q1->info, alge_zero, 6) == 0) {
             free(q1);
-        // info(q)  = 0 ? q' <- D(u) * v + 0
         } else if (memcmp(q->info, alge_zero, 6) == 0) {
             free(q);
             q = q1;
-        // q' <- D(u) * v + u * D(v)
         } else {
             q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
         }
+
         break;
+
     case 7:
         // q' <- D(u / v) = D(u) / v - (u * D(v)) / (v ^ 2)
         // p1 <- u, p2 <-v, q1 <- D(u), q <- D(v)
@@ -1689,11 +1744,11 @@ PALGEBRA_SYMBOL differentiation(
         q  = DIFF(p2);
 
         // info(q1) != 0 ? q1' <- D(u) / v = q1 / c1(p2)
+        // info(q) != 0 ? <- (u * D(v)) / (v ^ 2)
         if (memcmp(q1->info, alge_zero, 6)) {
             q1 = ALGE(2, ALGE_DIV, q1, ALGE_COPY(p2));
         }
 
-        // info(q) != 0 ? <- (u * D(v)) / (v ^ 2)
         if (memcmp(q->info, alge_zero, 6)) {
             q = MUL(ALGE_COPY(p1), q);
             c1 = ALGE(2, ALGE_POW, ALGE_COPY(p2), ALGE(0, ALGE_TWO));
@@ -1701,18 +1756,19 @@ PALGEBRA_SYMBOL differentiation(
         }
 
         // info(q)  = 0 ? q' <- D(u) - 0 = D(q1)
+        // info(q1) = 0 ? q' <- 0 - D(v) = -D(q)
+        // q' <- D(u) + D(v) = D(q1) - D(q)
         if (memcmp(q->info, alge_zero, 6) == 0) {
             free(q);
             q = q1;
-        // info(q1) = 0 ? q' <- 0 - D(v) = -D(q)
         } else if (memcmp(q1->info, alge_zero, 6) == 0) {
             free(q1);
             q = _tree_alloc(ALGE_NEG, &q->tree, 0);
-        // q' <- D(u) + D(v) = D(q1) - D(q)
         } else
             q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
 
         break;
+
     case 8:
         // q' <- D(u ** v) = D(u) * (v * (u ** (v - 1))) + ((ln u) * D(v)) x (u ** v)
         // p1 <- u, p2 <-v, q1 <- D(u), q <- D(v)
@@ -1720,57 +1776,252 @@ PALGEBRA_SYMBOL differentiation(
         p2 = tree_entry(p->tree.llink->rlink, ALGEBRA_SYMBOL, tree);
         q1 = DIFF(p1);
         q  = DIFF(p2);
-        // c1 = (v - 1)
-        c1 = ALGE(2, ALGE_SUB, ALGE_COPY(p2), ALGE(0, ALGE_ONE));
-        // c1 = u ** c1 = u ** (v - 1)
-        c1 = ALGE(2, ALGE_POW, ALGE_COPY(p1), c1);
-        // c1 = v * c1 = v * (u ** (v - 1))
-        c1 = ALGE(2, ALGE_MUL, ALGE_COPY(p2), c1);
+
         // q1 = D(u) * c1 = D(u) * (v * (u ** (v - 1)))
+        c1 = ALGE(2, ALGE_SUB, ALGE_COPY(p2), ALGE(0, ALGE_ONE));
+        c1 = ALGE(2, ALGE_POW, ALGE_COPY(p1), c1);
+        c1 = ALGE(2, ALGE_MUL, ALGE_COPY(p2), c1);
         q1 = ALGE(2, ALGE_MUL, q1, c1);
 
-        // c2 = ln u
-        c2 = ALGE(1, ALGE_LN, ALGE_COPY(p1));
-        // c2 = c2 * D(v)) = ln u * D(v)
-        c2 = ALGE(2, ALGE_MUL, c2, q);
         // q = c2 * (u ** v) = (ln u * D(v)) * (u ** v)
+        c2 = ALGE(1, ALGE_LN, ALGE_COPY(p1));
+        c2 = ALGE(2, ALGE_MUL, c2, q);
         q = ALGE(2, ALGE_MUL, c2, ALGE(2, ALGE_POW, ALGE_COPY(p1), ALGE_COPY(p2)));
 
         // info(q1) = 0 ? q' <- 0 + D(v) = D(q)
+        // info(q)  = 0 ? q' <- D(u) + 0 = D(q1)
+        // q' <- D(u) + D(v) = D(q1) + D(q)
         if (memcmp(q1->info, alge_zero, 6) == 0) {
             free(q1);
-        // info(q)  = 0 ? q' <- D(u) + 0 = D(q1)
         } else if (memcmp(q->info, alge_zero, 6) == 0) {
             free(q);
             q = q1;
-        // q' <- D(u) + D(v) = D(q1) + D(q)
         } else {
             q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
         }
+
         break;
+
     default:
         break;
     }
 
-    alge_print_symbol(&q->tree, &type);
+    // alge_print_symbol(&q->tree, &type);
     return q;
 }
 
 // Algorithm D
 // Differentiation
-struct _right_threaded_tree *dfferentiation(
-    struct _right_threaded_tree **dy,
-    struct _right_threaded_tree *y)
+PALGEBRA_SYMBOL differentiation(
+    PALGEBRA_SYMBOL y,
+    PTREE_INFO_COPY_FUNC _tree_info_copy,
+    PTREE_ALLOC_FUNC _tree_alloc,
+    PTREE_COPY_FUNC _tree_copy)
 {
-    struct _right_threaded_tree *p, *p1, *q1;
-    // D1. [Initialize.]
-    p = rttree_inorder_successor(0, y);
+    PALGEBRA_SYMBOL dy, p, p1, p2, q1, q, c1, c2;
 
-    // D2. [Differentiate.]
-    p1 = p->llink;
-    if (p1 != NULL) {
-        q1 = p1->rlink;
+    if (y == NULL)
+        return NULL;
+
+    dy = ALGE0(ALGE_VARY);
+
+    while (1) {
+    D1:
+        // Find Y$
+        // D1. [Initialize.]
+        p = tree_entry(y->tree.llink, ALGEBRA_SYMBOL, tree);
+    H2:
+        while (p->tree.llink != NULL)
+            p = tree_entry(p->tree.llink, ALGEBRA_SYMBOL, tree);
+    D2:
+        // D2. [Differentiate.]
+        goto DIFF;
+    D3:
+        // D3. [Restore link]
+        p1->tree.rlink = &p2->tree;
+    D4:
+        // D4. [Advance to P$]
+        p2 = p;
+        p = tree_entry(p->tree.rlink, ALGEBRA_SYMBOL, tree);
+        if (p2->tree.rtag == 0) {
+            p2->tree.rlink = &q->tree;
+            goto H2;
+        }
+    D5:
+        // D5. [Done ?]
+        // Prepare for step D2 (binary operators)
+        if (p->tree.llink != NULL)
+            p1 = tree_entry(p->tree.llink, ALGEBRA_SYMBOL, tree);
+
+        if (p1->tree.rlink != NULL)
+            q1 = tree_entry(p1->tree.rlink, ALGEBRA_SYMBOL, tree);
+
+        if (p != y)
+            goto D2;
+        else {
+            dy->tree.llink = &q->tree;
+            q->tree.rlink = &dy->tree;
+            q->tree.rtag = 1;
+            break;
+        }
     }
+
+    return dy;
+
+DIFF:
+// DIFF[TYPE(P)]
+    // printf("DIFF[%d]\n", p->type);
+    switch (p->type) {
+    case 0:
+        q = ALGE0(ALGE_ZERO);
+        goto D4;
+
+    case 1:
+        q = ALGE0(p->type == 1 ? ALGE_ONE : ALGE_ZERO);
+        goto D4;
+
+    case 2:
+        // p1 <- u, q <- D(u)
+        // info(q) != 0 ? q' <- D(u) / u = q / copy(p1)
+        if (memcmp(q->info, alge_zero, 6))
+            q = ALGE(2, ALGE_DIV, q, ALGE_COPY(p1));
+
+        goto D4;
+
+    case 3:
+        // p1 <- u, q <- D(u)
+        // info(q) != 0 ? q' <- -D(u) = -q
+        if (memcmp(q->info, alge_zero, 6))
+            q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+
+        goto D4;
+
+    case 4:
+        // q' <- D(u + v) = D(u) + D(v)
+        // q1 <- D(u), q <- D(v)
+        // info(q1) = 0 ? q' <- 0 + D(v) = D(q)
+        // info(q)  = 0 ? q' <- D(u) + 0 = D(q1)
+        // q' <- D(u) + D(v) = D(q1) + D(q)
+        if (memcmp(q1->info, alge_zero, 6) == 0) {
+            free(q1);
+        } else if (memcmp(q->info, alge_zero, 6) == 0) {
+            free(q);
+            q = q1;
+        } else
+            q = ALGE2(ALGE_ADD, q1, q);
+
+        goto D3;
+
+    case 5:
+        // q' <- D(u - v) = D(u) - D(v)
+        // p1 <- u, p2 <-v, q1 <- D(u), q <- D(v)
+        if (memcmp(q->info, alge_zero, 6) == 0) {
+            free(q);
+            q = q1;
+        } else if (memcmp(q1->info, alge_zero, 6) == 0) {
+            free(q1);
+            q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+        } else
+            q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
+
+        goto D3;
+
+    case 6:
+        // q' <- D(u * v) = D(u) * v + u * D(v)
+        // p1 <- u, p2 <-v, q1 <- D(u), q <- D(v)
+
+        // info(q1) = 0 ? q1' <- D(u) * v
+        // info(q)  = 0 ? q' <- u * D(v)
+        if (memcmp(q1->info, alge_zero, 6)) {
+            c1 = tree_entry(_tree_copy(0, &p2->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
+            q1 = multiple(q1, c1, _tree_alloc);
+            // Since q1 may be released in multiple(...), we set p1->rlink to null to avoid bug.
+            p1->tree.rlink = NULL;
+        }
+
+        if (memcmp(q->info, alge_zero, 6)) {
+            c1 = tree_entry(_tree_copy(0, &p1->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
+            q = multiple(c1, q, _tree_alloc);
+        }
+
+        // info(q1) = 0 ? q' <- 0 + u * D(v)
+        // info(q)  = 0 ? q' <- D(u) * v + 0
+        // q' <- D(u) * v + u * D(v)
+        if (memcmp(q1->info, alge_zero, 6) == 0) {
+            free(q1);
+        } else if (memcmp(q->info, alge_zero, 6) == 0) {
+            free(q);
+            q = q1;
+        } else {
+            q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+        }
+
+        goto D3;
+
+    case 7:
+        // q' <- D(u / v) = D(u) / v - (u * D(v)) / (v ^ 2)
+        // p1 <- u, p2 <-v, q1 <- D(u), q <- D(v)
+
+        // info(q1) != 0 ? q1' <- D(u) / v = q1 / c1(p2)
+        // info(q) != 0 ? <- (u * D(v)) / (v ^ 2)
+        if (memcmp(q1->info, alge_zero, 6)) {
+            q1 = ALGE(2, ALGE_DIV, q1, ALGE_COPY(p2));
+        }
+
+        if (memcmp(q->info, alge_zero, 6)) {
+            q = MUL(ALGE_COPY(p1), q);
+            c1 = ALGE(2, ALGE_POW, ALGE_COPY(p2), ALGE(0, ALGE_TWO));
+            q = ALGE(2, ALGE_DIV, q, c1);
+        }
+
+        // info(q)  = 0 ? q' <- D(u) - 0 = D(q1)
+        // info(q1) = 0 ? q' <- 0 - D(v) = -D(q)
+        // q' <- D(u) + D(v) = D(q1) - D(q)
+        if (memcmp(q->info, alge_zero, 6) == 0) {
+            free(q);
+            q = q1;
+        } else if (memcmp(q1->info, alge_zero, 6) == 0) {
+            free(q1);
+            q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+        } else
+            q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
+
+        goto D3;
+
+    case 8:
+        // q' <- D(u ** v) = D(u) * (v * (u ** (v - 1))) + ((ln u) * D(v)) x (u ** v)
+        // p1 <- u, p2 <-v, q1 <- D(u), q <- D(v)
+
+        // q1 = D(u) * c1 = D(u) * (v * (u ** (v - 1)))
+        c1 = ALGE(2, ALGE_SUB, ALGE_COPY(p2), ALGE(0, ALGE_ONE));
+        c1 = ALGE(2, ALGE_POW, ALGE_COPY(p1), c1);
+        c1 = ALGE(2, ALGE_MUL, ALGE_COPY(p2), c1);
+        q1 = ALGE(2, ALGE_MUL, q1, c1);
+
+        // q = c2 * (u ** v) = (ln u * D(v)) * (u ** v)
+        c2 = ALGE(1, ALGE_LN, ALGE_COPY(p1));
+        c2 = ALGE(2, ALGE_MUL, c2, q);
+        q = ALGE(2, ALGE_MUL, c2, ALGE(2, ALGE_POW, ALGE_COPY(p1), ALGE_COPY(p2)));
+
+        // info(q1) = 0 ? q' <- 0 + D(v) = D(q)
+        // info(q)  = 0 ? q' <- D(u) + 0 = D(q1)
+        // q' <- D(u) + D(v) = D(q1) + D(q)
+        if (memcmp(q1->info, alge_zero, 6) == 0) {
+            free(q1);
+        } else if (memcmp(q->info, alge_zero, 6) == 0) {
+            free(q);
+            q = q1;
+        } else {
+            q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+        }
+
+        goto D3;
+
+    default:
+        break;
+    }
+
+    return NULL;
 }
 
 void alge_print_symbol(void *q, void *p)
@@ -1841,10 +2092,7 @@ void tree_differentiation_test(void)
     rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
     // alge_print_symbol(&x->tree, &type);
     // alge_print_symbol(&a->tree, &type);
-    p  = ALGE(S, rttree_preorder_successor(0, &y->tree));
-    dy = ALGE(1, ALGE_VARX, differentiation(p, _tree_info_copy, _tree_alloc, _tree_copy));
-
-    // rttree_preorder_traverse_test(&y->tree,  alge_print_symbol);
+    dy = differentiation(y, _tree_info_copy, _tree_alloc, _tree_copy);
     rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
 
     free(x);
@@ -1860,12 +2108,7 @@ void tree_differentiation_test(void)
     y  = ALGE(1, ALGE_VARX, op);
 
     rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
-    // alge_print_symbol(&x->tree, &type);
-    // alge_print_symbol(&a->tree, &type);
-    p  = ALGE(S, rttree_preorder_successor(0, &y->tree));
-    dy = ALGE(1, ALGE_VARX, differentiation(p, _tree_info_copy, _tree_alloc, _tree_copy));
-
-    rttree_preorder_traverse_test(&y->tree,  alge_print_symbol);
+    dy = differentiation(y, _tree_info_copy, _tree_alloc, _tree_copy);
     rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
 
     free(x);
@@ -1875,18 +2118,13 @@ void tree_differentiation_test(void)
     free(dy);
 
     // y = ln x
-    x  = ALGE(0, ALGE_VARY);
+    x  = ALGE(0, ALGE_VARX);
     a  = ALGE(0, ALGE_ONE);
     op = ALGE(1, ALGE_LN, x);
-    y  = ALGE(1, ALGE_VARX, op);
+    y  = ALGE(1, ALGE_VARY, op);
 
     rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
-    // alge_print_symbol(&x->tree, &type);
-    // alge_print_symbol(&a->tree, &type);
-    p  = ALGE(S, rttree_preorder_successor(0, &y->tree));
-    dy = ALGE(1, ALGE_VARX, differentiation(p, _tree_info_copy, _tree_alloc, _tree_copy));
-
-    // rttree_preorder_traverse_test(&y->tree,  alge_print_symbol);
+    dy = differentiation(y, _tree_info_copy, _tree_alloc, _tree_copy);
     rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
 
     free(x);
@@ -1899,15 +2137,10 @@ void tree_differentiation_test(void)
     x  = ALGE(0, ALGE_VARX);
     a  = ALGE(0, ALGE_VARX);
     op = ALGE(2, ALGE_MUL, x, a);
-    y  = ALGE(1, ALGE_VARX, op);
+    y  = ALGE(1, ALGE_VARY, op);
 
     rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
-    // alge_print_symbol(&x->tree, &type);
-    // alge_print_symbol(&a->tree, &type);
-    p  = ALGE(S, rttree_preorder_successor(0, &y->tree));
-    dy = ALGE(1, ALGE_VARX, differentiation(p, _tree_info_copy, _tree_alloc, _tree_copy));
-
-    // rttree_preorder_traverse_test(&y->tree,  alge_print_symbol);
+    dy = differentiation(y, _tree_info_copy, _tree_alloc, _tree_copy);
     rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
 
     free(x);
@@ -1916,19 +2149,14 @@ void tree_differentiation_test(void)
     free(y);
     free(dy);
 
-    // y = x * x
+    // y = x / x
     x  = ALGE(0, ALGE_VARX);
     a  = ALGE(0, ALGE_VARX);
     op = ALGE(2, ALGE_DIV, x, a);
     y  = ALGE(1, ALGE_VARX, op);
 
     rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
-    // alge_print_symbol(&x->tree, &type);
-    // alge_print_symbol(&a->tree, &type);
-    p  = ALGE(S, rttree_preorder_successor(0, &y->tree));
-    dy = ALGE(1, ALGE_VARX, differentiation(p, _tree_info_copy, _tree_alloc, _tree_copy));
-
-    // rttree_preorder_traverse_test(&y->tree,  alge_print_symbol);
+    dy = differentiation(y, _tree_info_copy, _tree_alloc, _tree_copy);
     rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
 
     free(x);
@@ -1941,15 +2169,11 @@ void tree_differentiation_test(void)
     x  = ALGE(1, ALGE_LN, ALGE(0, ALGE_VARX));
     a  = ALGE(0, ALGE_VARX);
     op = ALGE(2, ALGE_DIV, x, a);
-    y  = ALGE(1, ALGE_VARX, op);
+    y  = ALGE(1, ALGE_VARY, op);
 
     rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
-    // alge_print_symbol(&x->tree, &type);
-    // alge_print_symbol(&a->tree, &type);
-    p  = ALGE(S, rttree_preorder_successor(0, &y->tree));
-    dy = ALGE(1, ALGE_VARX, differentiation(p, _tree_info_copy, _tree_alloc, _tree_copy));
-
-    // rttree_preorder_traverse_test(&y->tree,  alge_print_symbol);
+    dy = differentiation(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    // rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
     rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
 
     free(x);
@@ -1965,12 +2189,7 @@ void tree_differentiation_test(void)
     y  = ALGE(1, ALGE_VARX, op);
 
     rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
-    // alge_print_symbol(&x->tree, &type);
-    // alge_print_symbol(&a->tree, &type);
-    p  = ALGE(S, rttree_preorder_successor(0, &y->tree));
-    dy = ALGE(1, ALGE_VARX, differentiation(p, _tree_info_copy, _tree_alloc, _tree_copy));
-
-    // rttree_preorder_traverse_test(&y->tree,  alge_print_symbol);
+    dy = differentiation(y, _tree_info_copy, _tree_alloc, _tree_copy);
     rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
 
     free(x);
@@ -1986,12 +2205,170 @@ void tree_differentiation_test(void)
     y  = ALGE(1, ALGE_VARX, op);
 
     rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
+    dy = differentiation(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
+    rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
+
+    free(x);
+    free(a);
+    free(op);
+    free(y);
+    free(dy);
+}
+
+// Test recursive version
+void tree_differentiation_r_test(void)
+{
+    int type = -1;
+    PTREE_INFO_COPY_FUNC _tree_info_copy = alge_tree_info_copy;
+    PTREE_ALLOC_FUNC _tree_alloc = alge_tree_alloc2;
+    PTREE_COPY_FUNC _tree_copy = rttree_copy;
+    ALGEBRA_SYMBOL *x;
+    ALGEBRA_SYMBOL *a;
+    ALGEBRA_SYMBOL *op;
+    ALGEBRA_SYMBOL *y;
+    ALGEBRA_SYMBOL *p;
+    ALGEBRA_SYMBOL *dy;
+
+    // y = x + 1
+    x  = ALGE(0, ALGE_VARX);
+    a  = ALGE(0, ALGE_ONE);
+    op = ALGE(2, ALGE_ADD, x, a);
+    y  = ALGE(1, ALGE_VARX, op);
+
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
     // alge_print_symbol(&x->tree, &type);
     // alge_print_symbol(&a->tree, &type);
-    p  = ALGE(S, rttree_preorder_successor(0, &y->tree));
-    dy = ALGE(1, ALGE_VARX, differentiation(p, _tree_info_copy, _tree_alloc, _tree_copy));
+    dy = differentiation_r(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
 
-    // rttree_preorder_traverse_test(&y->tree,  alge_print_symbol);
+    free(x);
+    free(a);
+    free(op);
+    free(y);
+    free(dy);
+
+    // y = x + 1
+    x  = ALGE(0, ALGE_VARX);
+    a  = ALGE(0, ALGE_ONE);
+    op = ALGE(2, ALGE_ADD, x, a);
+    y  = ALGE(1, ALGE_VARX, op);
+
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
+    dy = differentiation_r(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
+
+    free(x);
+    free(a);
+    free(op);
+    free(y);
+    free(dy);
+
+    // y = 1 - x
+    x  = ALGE(0, ALGE_VARX);
+    a  = ALGE(0, ALGE_ONE);
+    op = ALGE(2, ALGE_SUB, a, x);
+    y  = ALGE(1, ALGE_VARX, op);
+
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
+    dy = differentiation_r(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
+
+    free(x);
+    free(a);
+    free(op);
+    free(y);
+    free(dy);
+
+    // y = ln x
+    x  = ALGE(0, ALGE_VARY);
+    a  = ALGE(0, ALGE_ONE);
+    op = ALGE(1, ALGE_LN, x);
+    y  = ALGE(1, ALGE_VARX, op);
+
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
+    dy = differentiation_r(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
+
+    free(x);
+    free(a);
+    free(op);
+    free(y);
+    free(dy);
+
+    // y = x * x
+    x  = ALGE(0, ALGE_VARX);
+    a  = ALGE(0, ALGE_VARX);
+    op = ALGE(2, ALGE_MUL, x, a);
+    y  = ALGE(1, ALGE_VARX, op);
+
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
+    dy = differentiation_r(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
+
+    free(x);
+    free(a);
+    free(op);
+    free(y);
+    free(dy);
+
+    // y = x * x
+    x  = ALGE(0, ALGE_VARX);
+    a  = ALGE(0, ALGE_VARX);
+    op = ALGE(2, ALGE_DIV, x, a);
+    y  = ALGE(1, ALGE_VARX, op);
+
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
+    dy = differentiation_r(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
+
+    free(x);
+    free(a);
+    free(op);
+    free(y);
+    free(dy);
+
+    // y = ln x / x
+    x  = ALGE(1, ALGE_LN, ALGE(0, ALGE_VARX));
+    a  = ALGE(0, ALGE_VARX);
+    op = ALGE(2, ALGE_DIV, x, a);
+    y  = ALGE(1, ALGE_VARX, op);
+
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
+    dy = differentiation_r(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
+
+    free(x);
+    free(a);
+    free(op);
+    free(y);
+    free(dy);
+
+    // y = x ** x
+    x  = ALGE(0, ALGE_VARX);
+    a  = ALGE(0, ALGE_VARX);
+    op = ALGE(2, ALGE_POW, x, a);
+    y  = ALGE(1, ALGE_VARX, op);
+
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
+    dy = differentiation_r(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
+
+    free(x);
+    free(a);
+    free(op);
+    free(y);
+    free(dy);
+
+    // y = 3 ln (x + 1) - a / x^2
+    x  = ALGE(2, ALGE_MUL, ALGE(0, ALGE_THREE), ALGE(1, ALGE_LN, ALGE(2, ALGE_ADD, ALGE(0, ALGE_VARX), ALGE(0, ALGE_ONE))));
+    a  = ALGE(2, ALGE_DIV, ALGE(0, ALGE_A), ALGE(2, ALGE_POW, ALGE(0, ALGE_VARX), ALGE(0, ALGE_TWO)));
+    op = ALGE(2, ALGE_SUB, x, a);
+    y  = ALGE(1, ALGE_VARX, op);
+
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
+    dy = differentiation_r(y, _tree_info_copy, _tree_alloc, _tree_copy);
+    rttree_preorder_traverse_test(&y->tree, alge_print_symbol);
     rttree_preorder_traverse_test(&dy->tree, alge_print_symbol);
 
     free(x);
