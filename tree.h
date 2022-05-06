@@ -34,8 +34,8 @@ struct _threaded_tree {
 };
 
 struct _right_threaded_tree {
-    struct _right_threaded_tree *llink, *rlink;
     u8 rtag;
+    struct _right_threaded_tree *llink, *rlink;
 };
 
 #define TTREE_HEAD_INIT(name)    {.ltag = 1, .rtag = 0, .llink = &(name), .rlink = &(name)}

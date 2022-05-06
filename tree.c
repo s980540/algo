@@ -92,9 +92,9 @@ struct _rtto
 
 typedef struct _algebra_symbol
 {
-    struct _right_threaded_tree tree;
     char info[6];
     u8 type;
+    struct _right_threaded_tree tree;
 } ALGEBRA_SYMBOL, *PALGEBRA_SYMBOL;
 
 #define ELE_NUM (9)
@@ -1582,7 +1582,8 @@ PALGEBRA_SYMBOL multiple(
         return u;
     }
 
-    return _tree_alloc(ALGE_MUL, &u->tree, &v->tree);
+    // return _tree_alloc(ALGE_MUL, &u->tree, &v->tree);
+    return ALGE(2, ALGE_MUL, u, v);
 }
 
 // Algorithm D
@@ -1626,12 +1627,14 @@ PALGEBRA_SYMBOL _differentiation_r(
 
     switch (p->type) {
     case 0:
-        q = _tree_alloc(ALGE_ZERO, 0, 0);
+        // q = _tree_alloc(ALGE_ZERO, 0, 0);
+        q = ALGE(0, ALGE_ZERO);
         break;
 
     case 1:
         // q = _tree_alloc(strcmp(p->info, "x") == 0 ? ALGE_ONE : ALGE_ZERO, 0, 0);
-        q = _tree_alloc(p->type == 1 ? ALGE_ONE : ALGE_ZERO, 0, 0);
+        // q = _tree_alloc(p->type == 1 ? ALGE_ONE : ALGE_ZERO, 0, 0);
+        q = ALGE(0, p->type == 1 ? ALGE_ONE : ALGE_ZERO);
         break;
 
     case 2:
@@ -1652,7 +1655,8 @@ PALGEBRA_SYMBOL _differentiation_r(
         q = DIFF(p1);
 
         if (memcmp(q->info, alge_zero, 6))
-            q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+            // q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+            q = ALGE(1, ALGE_NEG, q);
 
         break;
 
@@ -1674,7 +1678,8 @@ PALGEBRA_SYMBOL _differentiation_r(
             free(q);
             q = q1;
         } else {
-            q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+            // q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+            q = ALGE(2, ALGE_ADD, q1, q);
         }
 
         break;
@@ -1695,9 +1700,11 @@ PALGEBRA_SYMBOL _differentiation_r(
             q = q1;
         } else if (memcmp(q1->info, alge_zero, 6) == 0) {
             free(q1);
-            q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+            // q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+            q = ALGE(1, ALGE_NEG, q);
         } else
-            q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
+            // q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
+            q = ALGE(2, ALGE_SUB, q1, q);
 
         break;
 
@@ -1712,12 +1719,14 @@ PALGEBRA_SYMBOL _differentiation_r(
         // info(q1) = 0 ? q1' <- D(u) * v
         // info(q)  = 0 ? q' <- u * D(v)
         if (memcmp(q1->info, alge_zero, 6)) {
-            c1 = tree_entry(_tree_copy(0, &p2->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
+            // c1 = tree_entry(_tree_copy(0, &p2->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
+            c1 = ALGE_COPY(p2);
             q1 = multiple(q1, c1, _tree_alloc);
         }
 
         if (memcmp(q->info, alge_zero, 6)) {
-            c1 = tree_entry(_tree_copy(0, &p1->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
+            // c1 = tree_entry(_tree_copy(0, &p1->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
+            c1 = ALGE_COPY(p1);
             q = multiple(c1, q, _tree_alloc);
         }
 
@@ -1730,7 +1739,8 @@ PALGEBRA_SYMBOL _differentiation_r(
             free(q);
             q = q1;
         } else {
-            q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+            // q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+            q = ALGE(2, ALGE_ADD, q1, q);
         }
 
         break;
@@ -1763,9 +1773,11 @@ PALGEBRA_SYMBOL _differentiation_r(
             q = q1;
         } else if (memcmp(q1->info, alge_zero, 6) == 0) {
             free(q1);
-            q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+            // q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+            q = ALGE(1, ALGE_NEG, q);
         } else
-            q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
+            // q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
+            q = ALGE(2, ALGE_SUB, q1, q);
 
         break;
 
@@ -1797,7 +1809,8 @@ PALGEBRA_SYMBOL _differentiation_r(
             free(q);
             q = q1;
         } else {
-            q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+            // q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+            q = ALGE(2, ALGE_ADD, q1, q);
         }
 
         break;
@@ -1844,7 +1857,7 @@ PALGEBRA_SYMBOL _differentiation(
         // p1 <- u, q <- D(u)
         // info(q) != 0 ? q' <- -D(u) = -q
         if (memcmp(q->info, alge_zero, 6))
-            q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+            q = ALGE(1, ALGE_NEG, q);
 
         break;
 
@@ -1872,9 +1885,9 @@ PALGEBRA_SYMBOL _differentiation(
             q = q1;
         } else if (memcmp(q1->info, alge_zero, 6) == 0) {
             free(q1);
-            q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+            q = ALGE(1, ALGE_NEG, q);
         } else
-            q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
+            q = ALGE(2, ALGE_SUB, q1, q);
 
         break;
 
@@ -1885,14 +1898,16 @@ PALGEBRA_SYMBOL _differentiation(
         // info(q1) = 0 ? q1' <- D(u) * v
         // info(q)  = 0 ? q' <- u * D(v)
         if (memcmp(q1->info, alge_zero, 6)) {
-            c1 = tree_entry(_tree_copy(0, &p2->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
+            // c1 = tree_entry(_tree_copy(0, &p2->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
+            c1 = ALGE_COPY(p2);
             q1 = multiple(q1, c1, _tree_alloc);
             // Since q1 may be released in multiple(...), we set p1->rlink to null to avoid following copy fic
             p1->tree.rlink = NULL;
         }
 
         if (memcmp(q->info, alge_zero, 6)) {
-            c1 = tree_entry(_tree_copy(0, &p1->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
+            // c1 = tree_entry(_tree_copy(0, &p1->tree, _tree_info_copy, _tree_alloc), ALGEBRA_SYMBOL, tree);
+            c1 = ALGE_COPY(p1);
             q = multiple(c1, q, _tree_alloc);
         }
 
@@ -1905,7 +1920,7 @@ PALGEBRA_SYMBOL _differentiation(
             free(q);
             q = q1;
         } else {
-            q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+            q = ALGE(2, ALGE_ADD, q1, q);
         }
 
         break;
@@ -1934,9 +1949,11 @@ PALGEBRA_SYMBOL _differentiation(
             q = q1;
         } else if (memcmp(q1->info, alge_zero, 6) == 0) {
             free(q1);
-            q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+            // q = _tree_alloc(ALGE_NEG, &q->tree, 0);
+            q = ALGE(1, ALGE_NEG, q);
         } else
-            q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
+            // q = _tree_alloc(ALGE_SUB, &q1->tree, &q->tree);
+            q = ALGE(2, ALGE_SUB, q1, q);
 
         break;
 
@@ -1964,7 +1981,8 @@ PALGEBRA_SYMBOL _differentiation(
             free(q);
             q = q1;
         } else {
-            q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+            // q = _tree_alloc(ALGE_ADD, &q1->tree, &q->tree);
+            q = ALGE(2, ALGE_ADD, q1, q);
         }
 
         break;
