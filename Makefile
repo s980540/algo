@@ -10,13 +10,11 @@ OBJ       = main.o menu.o string_match.o data_struct.o utility.o \
 			list.o sort.o c_test.o tree.o menu_bignum.o
 LINKOBJ   = main.o menu.o string_match.o data_struct.o utility.o \
 			mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o \
-			list.o sort.o c_test.o tree.o menu_bignum.o
-
+			list.o sort.o c_test.o tree.o menu_bignum.o ./lib/libexpr.a
 LIBS      = -L"C:/MinGW/lib" \
 			-L"C:/MinGW/mingw32/lib" \
 			-L./lib \
-			-lgmp-10 \
-			-lexpr \
+			-lgmp \
 			-static-libgcc -m32
 INCS      = -I"C:/MinGW/include" \
 			-I"C:/MinGW/mingw32/include" \
