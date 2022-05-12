@@ -57,7 +57,11 @@
             "random": "c",
             "algorithm": "c",
             "tree.h": "c",
-            "test": "c"
+            "test": "c",
+            "gmp.h": "c",
+            "menu_bignum.h": "c",
+            "menu.h": "c",
+            "expr.h": "c"
         }
 	}
 }

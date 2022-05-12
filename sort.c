@@ -606,6 +606,9 @@ void insertion_sort_test(int num)
 
 static void *stoi(void *i, const void *s)
 {
+    if (i == NULL)
+        return NULL;
+
     *(int *)i = atoi(s);
 
     return i;

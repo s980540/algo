@@ -13,6 +13,7 @@
 #include "c_test.h"
 #include "sort.h"
 #include "tree.h"
+#include "menu_bignum.h"
 
 static const struct _MENU_FUNCTION _menu_functions[] =
 {
@@ -22,6 +23,7 @@ static const struct _MENU_FUNCTION _menu_functions[] =
     {"c-test",  MENU_FUNC_C_TEST,       menu_func_c_test,       "Demo c programming language"},
     {"sort",    MENU_FUNC_SORT,         menu_func_sort,         "Demo sort algorithm"},
     {"tree",    MENU_FUNC_TREE,         menu_func_tree,         "Demo tree algorithm"},
+    {"bignum",  MENU_FUNC_BIGNUM,       menu_func_bignum,       "Demo big num"},
 
     {NULL}
 };

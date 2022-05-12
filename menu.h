@@ -69,6 +69,7 @@ typedef enum _MENU_FUNCTION_CODE
     MENU_FUNC_C_TEST,
     MENU_FUNC_SORT,
     MENU_FUNC_TREE,
+    MENU_FUNC_BIGNUM,
     // MENU_FUNC_TEST_SLL,
     // MENU_FUNC_TEST_LIST,
     /* file system related functions */

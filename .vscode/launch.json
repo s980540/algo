@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "C:\\Workspace\\algo\\algo.exe",
-            "args": ["tree", "--diff"],
+            "args": ["bignum", "--demo", "2**64"],
             "stopAtEntry": true,
             "cwd": "C:\\Workspace\\algo",
             "environment": [],

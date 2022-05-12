@@ -553,7 +553,14 @@ void *menu_get_arg(int index, void *result, PARG_CONVERT_FUNC convert)
     if ((index >= m_param_cnt) || ((m_param_idx + index) > m_argc))
         return NULL;
 
-    return convert(result, m_argv[m_param_idx + index]);
+    if (convert != NULL)
+        return convert(result, m_argv[m_param_idx + index]);
+    else {
+        if (result != NULL)
+            result = m_argv[m_param_idx + index];
+
+        return m_argv[m_param_idx + index];
+    }
 }
 
 void *opt_get_arg(void)
