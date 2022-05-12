@@ -58,7 +58,7 @@ see https://www.gnu.org/licenses/.  */
 /* Instantiated by configure. */
 #if ! defined (__GMP_WITHIN_CONFIGURE)
 /* #undef _LONG_LONG_LIMB */
-#define __GMP_LIBGMP_DLL  0
+#define __GMP_LIBGMP_DLL  1
 #endif
 
 
