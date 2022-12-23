@@ -13,6 +13,6 @@
 
 ret_code menu_func_string_match(int argc, char **argv);
 void string_match_test(void);
-int native_string_match(const char *src, const char *tar, u32 *rlt);
+int native_string_match(const char *src, const char *tar, int *rlt);
 
 #endif

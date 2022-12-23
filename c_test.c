@@ -1,19 +1,28 @@
 #include "c_test.h"
 
-typedef enum _OPT_CODE_C_TEST
+static void u32_swap(void *a, void *b, size_t size)
 {
-    OPT_CODE_C_TEST_HELP = 0,
-    OPT_CODE_C_TEST_DEMO = 1,
+    u32 t = *(u32 *)a;
+    *(u32 *)a = *(u32 *)b;
+    *(u32 *)b = t;
+}
 
-} OPT_CODE_C_TEST;
-
-static const struct _MENU_OPTION c_test_options[] =
+static void u64_swap(void *a, void *b, size_t size)
 {
-    {"--help", OPT_CODE_C_TEST_HELP, '-', "Display this summary"},
-    {"--demo", OPT_CODE_C_TEST_DEMO, '-', "Demo C programming language"},
+    u64 t = *(u64 *)a;
+    *(u64 *)a = *(u64 *)b;
+    *(u64 *)b = t;
+}
 
-    {NULL}
-};
+static void generic_swap(void *a, void *b, size_t size)
+{
+    char t;
+    while (size--) {
+        t = *(char *)a;
+        *(char *)a = *(char *)b;
+        *(char *)b = t;
+    }
+}
 
 void swap(char *a, char *b)
 {
@@ -22,6 +31,19 @@ void swap(char *a, char *b)
     t = *a;  // x = a ^ b
     *a = *b;  // a' = x ^ b
     *b = t;  // b' = x ^ a'
+}
+
+static void printd(int n)
+{
+    if (n < 0) {
+        printf("-");
+        n = -n;
+    }
+
+    if (n >= 10)
+        printd(n/10);
+
+    printf("%c", n % 10 + '0');
 }
 
 void invert_string(char *s, size_t size)
@@ -56,19 +78,6 @@ void invert_sentence(char *s)
         }
         i++;
     }
-}
-
-void printd(int n)
-{
-    if (n < 0) {
-        printf("-");
-        n = -n;
-    }
-
-    if (n >= 10)
-        printd(n/10);
-
-    printf("%c", n % 10 + '0');
 }
 
 struct PASSWORD_INFO
@@ -586,8 +595,6 @@ char * minRemoveToMakeValid(char * s)
 }
 #endif
 #endif
-
-#include "sort.h"
 
 static int int_comp(const void *a, const void *b, size_t size)
 {
@@ -1301,8 +1308,276 @@ int lengthOfLongestSubstring(char * s){
 //     return le - ls;
 // }
 
+#define STRING_BUF_SIZE        (256)
+char str[STRING_BUF_SIZE];
+char id[STRING_BUF_SIZE];
+char time_str[STRING_BUF_SIZE];
+char songname[STRING_BUF_SIZE];
+char singer[STRING_BUF_SIZE];
+char start[STRING_BUF_SIZE];
+char yt_url[STRING_BUF_SIZE];
+
+static long file_get_line_num(FILE *fp)
+{
+    long i = 0, pos;
+
+    // Backup the current location of file position indicator
+    pos = ftell(fp);
+
+    while (fgets(str, STRING_BUF_SIZE, fp) != NULL) {
+        i++;
+    }
+    // Restore the location of file position indicator
+    fseek(fp, pos, SEEK_SET);
+
+    return i;
+}
+
+static int file_songlist_to_wikitable(ALGO_FILE *s_file, ALGO_FILE *w_file)
+{
+    int ret = ALGO_ERROR_UNKNOWN;
+    int l, r = 0;
+    long line_num;
+    char *sp, *ep, *tp;
+
+    // Set the location of file position indicator to the beginning
+    fseek(s_file->fp, 0, SEEK_SET);
+    fseek(w_file->fp, 0, SEEK_SET);
+
+    // Start to parse the file
+    for (r = 0; r < 2; r++) {
+        // Set the location of file position indicator to the beginning
+        // Get line number of input file
+        fseek(s_file->fp, 0, SEEK_SET);
+        line_num = file_get_line_num(s_file->fp);
+
+        if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
+            ret = ALGO_ERROR_READ_FILE;
+            goto exit;
+        }
+        sp = strchr(str, '\n');
+        *sp = '\0';
+
+        // Get id (v=tlsjhiZepx0)
+        // https://www.youtube.com/watch?v=tlsjhiZepx0&t=241s
+        sp = strchr(str, '=') + 1;
+        ep = strchr(sp, '&');
+        *ep++ = '\0';
+        strcpy(id, sp);
+        printf("id: %s\n", id);
+
+        // Get start (t=241s)
+        // https://www.youtube.com/watch?v=tlsjhiZepx0&t=241s
+        sp = ep;
+        sp = strchr(sp, '=') + 1;
+        ep = strchr(sp, 's');
+        *ep = '\0';
+        strcpy(start, sp);
+        printf("start: %s\n", start);
+
+        // Get a new line
+        if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
+            ret = ALGO_ERROR_READ_FILE;
+            goto exit;
+        }
+        sp = strchr(str, '\n');
+        *sp = '\0';
+        if (r == 0)
+            fprintf(w_file->fp, "=== %s", str);
+        if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
+            ret = ALGO_ERROR_READ_FILE;
+            goto exit;
+        }
+        sp = strchr(str, '\n');
+        *sp = '\0';
+        if (r == 0)
+            fprintf(w_file->fp, "%s ===\n", str);
+
+        if (r == 0) {
+            fprintf(w_file->fp, "%s\n", "<mobileonly>");
+            fprintf(w_file->fp, "%s\n", "{| class=\"wikitable\" style=\"margin: 1em auto 1em auto;\"");
+        } else {
+            fprintf(w_file->fp, "%s\n", "<nomobile>");
+            fprintf(w_file->fp, "%s\n", "{| class=\"wikitable\" <!--style=\"margin: 1em auto 1em auto;\"-->");
+        }
+
+        // if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
+        //     ret = ALGO_ERROR_READ_FILE;
+        //     goto exit;
+        // }
+        // sp = strchr(str, '\n');
+        // *sp = '\0';
+
+        fprintf(w_file->fp, "|+\n");
+        // if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
+        //     ret = ALGO_ERROR_READ_FILE;
+        //     goto exit;
+        // }
+        // sp = strchr(str, '\n');
+        // *sp = '\0';
+        // fprintf(w_file->fp, "%s\n", str);
+        fprintf(w_file->fp, "|-\n");
+        printf("id: %s\n", id);
+        printf("start: %s\n", start);
+
+        if (r == 0) {
+            fprintf(w_file->fp, "| %s | {{#widget:Youtube|id=%s?start=%d}}\n", "style=\"width: 960px;\" colspan=\"5\"", id, atoi(start));
+            fprintf(w_file->fp, "|-\n");
+        } else {
+            fprintf(w_file->fp, "| %s%d\" | {{#widget:Youtube|id=%s?start=%d}}\n", "style=\"width: 540px;\" rowspan=\"", line_num - 2, id, atoi(start));
+        }
+        fprintf(w_file->fp, "| style=\"width: 3em;\" | 曲目 || style=\"width: 10em;\" | 歌曲名稱 || style=\"width: 13em;\" | 原唱 || style=\"width: 5em;\" | 時間 || 備註\n");
+
+        // return 0;
+        for (l = 3; l < line_num; l++) {
+            if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
+                ret = ALGO_ERROR_READ_FILE;
+                goto exit;
+            }
+            sp = strchr(str, '\n');
+            if (sp != NULL)
+                *sp = '\0';
+
+            // find the first '.' character
+            // Get index
+            tp = str;
+            sp = strchr(tp, '.');
+            *sp++ = '\0';
+            int index;
+            if (*tp >= '0' && *tp <= '9')
+                index = atoi(tp);
+            else
+                index = -1;
+
+
+            printf("%d ", index);
+
+            // Skip ' '
+            while (*sp == ' ')
+                sp++;
+            memset(time_str, 0, STRING_BUF_SIZE);
+            memcpy(time_str, sp, 7);
+            tp = sp;
+            sp = strchr(tp, ':');
+            *sp++ = '\0';
+            int time2  = atoi(tp);
+
+            tp = sp;
+            sp = strchr(tp, ':');
+            *sp++ = '\0';
+            time2  = time2 * 60 + atoi(tp);
+
+            tp = sp;
+            sp = strchr(tp, ' ');
+            *sp++ = '\0';
+            time2  = time2 * 60 + atoi(tp);
+            printf("%d ", time2);
+
+            while (*sp == ' ')
+                sp++;
+
+            // sp = strchr(sp, '\0');
+            // sp++;
+            // printf("%s", sp);
+
+            // Get singer
+            tp = sp;
+            sp = strchr(sp, '/');
+            sp++;
+            while (*sp == ' ')
+                sp++;
+            strcpy(singer, sp);
+
+            // Get song name
+            sp = tp;
+            sp = strchr(sp, '/');
+            while (sp[-1] == ' ')
+                sp--;
+
+            *sp = '\0';
+            strcpy(songname, tp);
+            printf("%s %s\n", songname, singer);
+
+            fprintf(w_file->fp, "|-\n");
+            // fprintf(w_file->fp, "| %d || %s || %s || %s || \n", index, songname, singer);
+            if (index != -1)
+                fprintf(w_file->fp, "| %d || %s || %s || [https://www.youtube.com/watch?v=%s&t=%ds %s]\n"
+                        , index, songname, singer, id, time2, time_str);
+            else
+                fprintf(w_file->fp, "| %s || %s || %s || [https://www.youtube.com/watch?v=%s&t=%ds %s]\n"
+                        , "安可曲", songname, singer, id, time2, time_str);
+
+        }
+        fprintf(w_file->fp, "|}\n");
+        if (r == 0)
+            fprintf(w_file->fp, "%s\n", "</mobileonly>");
+        else
+            fprintf(w_file->fp, "%s\n", "</nomobile>");
+    }
+
+    ret = ALGO_SUCCESS;
+
+exit:
+    return ret;
+}
+
+ret_code songlist_to_wikitable(void)
+{
+    int i, ret = E_UNKNOWN, ferr;
+
+    const char *yt_url = "";
+    const char *file_name = "songlist.txt";
+    ALGO_FILE s_file = {.fp = NULL, .file_name = "songlist.txt"};
+    ALGO_FILE w_file = {.fp = NULL, .file_name = "wikitable.txt"};
+    FILE *sfp, *wfp;
+
+    if (file_open(&s_file, s_file.file_name, "r")) {
+        goto exit;
+    }
+
+    if (file_open(&w_file, w_file.file_name, "w")) {
+        goto exit;
+    }
+
+    file_songlist_to_wikitable(&s_file, &w_file);
+
+    if (feof(s_file.fp)) {
+        printf("feof\n");
+    }
+
+    ferr = ferror(s_file.fp);
+    if (ferr) {
+        printf("ferror: %d\n", ferr);
+        perror("");
+        clearerr(s_file.fp);
+        goto exit;
+    }
+
+    if (file_close(&s_file)) {
+        return ret;
+    }
+
+    if (file_close(&w_file)) {
+        return ret;
+    }
+
+    ret = 0;
+
+exit:
+    if (s_file.fp) {
+        file_close(&s_file);
+    }
+
+    if (w_file.fp) {
+        file_close(&w_file);
+    }
+
+    return ret;
+}
+
 void c_test(void)
 {
+    printf("%s start >>>\n", __FUNCTION__);
     // // char s[] = "This is a pen";
     // char s[] = "The master branch at origin should be familiar to every Git user. Parallel to the master branch, another branch exists called develop.";
     // char *t = malloc(sizeof(s));
@@ -1389,47 +1664,7 @@ void c_test(void)
     //             i, rr[i][0], rr[i][1], rr[i][2], rr[i][3]);
     // }
 
-    printf("len: %d\n", lengthOfLongestSubstring(0));
-}
-
-ret_code menu_func_c_test(int argc, char **argv)
-{
-    MENU_RET_CODE ret;
-    int opt_code;
-
-    printf("%s\n", __FUNCTION__);
-
-    ret = menu_opt_init(argc, 3, argv, c_test_options);
-    if (ret != MENU_RET_SUCCESS) {
-        printf("menu_opt_init failed (%d)\n", ret);
-        menu_opt_help("algo c-test", c_test_options);
-        return ret;
-    }
-
-    while (1) {
-        ret = menu_get_opt_code(&opt_code, c_test_options);
-        if (ret != MENU_RET_SUCCESS) {
-            if (ret != MENU_RET_EOF) {
-                printf("menu_get_opt_code failed (%d)\n", ret);
-
-                menu_opt_help("algo c-test", c_test_options);
-            }
-            break;
-        }
-
-        switch (opt_code) {
-        case OPT_CODE_C_TEST_HELP:
-            menu_opt_help("algo c-test", c_test_options);
-            break;
-
-        case OPT_CODE_C_TEST_DEMO:
-            c_test();
-            break;
-
-        default:
-            break;
-        }
-    }
-
-    return MENU_RET_SUCCESS;
+    // printf("len: %d\n", lengthOfLongestSubstring(0));
+    songlist_to_wikitable();
+    printf("%s end <<<\n", __FUNCTION__);
 }

@@ -5,12 +5,25 @@
 CPP       = g++.exe -mno-ms-bitfields
 CC        = gcc.exe -mno-ms-bitfields
 WINDRES   = windres.exe
-OBJ       = main.o menu.o string_match.o data_struct.o utility.o \
+OBJ       = main.o menu.o data_struct.o utility.o \
 			mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o \
-			list.o sort.o c_test.o tree.o menu_bignum.o
-LINKOBJ   = main.o menu.o string_match.o data_struct.o utility.o \
+			string_match.o menu_string_match.o\
+			list.o menu_list.o\
+			c_test.o menu_c_test.o\
+			sort.o sort_demo.o menu_sort.o \
+			search.o \
+			tree.o tree_traverse.o tree_derivative.o menu_tree.o \
+			menu_bignum.o
+LINKOBJ   = main.o menu.o data_struct.o utility.o \
 			mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o \
-			list.o sort.o c_test.o tree.o menu_bignum.o C:/Workspace/gmp-6.2.1/demos/expr/libexpr.a
+			string_match.o menu_string_match.o\
+			list.o menu_list.o\
+			c_test.o menu_c_test.o \
+			sort.o sort_demo.o menu_sort.o \
+			search.o \
+			tree.o tree_traverse.o tree_derivative.o menu_tree.o \
+			menu_bignum.o \
+			C:/Workspace/gmp-6.2.1/demos/expr/libexpr.a
 LIBS      = -L"C:/MinGW/lib" \
 			-L"C:/MinGW/mingw32/lib" \
 			-L"/usr/local/lib" \
@@ -82,8 +95,17 @@ serial.o: serial.c
 list.o: list.c
 	$(CC) -c list.c $(BFLAGS) list.o $(CFLAGS)
 
+search.o: search.c
+	$(CC) -c search.c $(BFLAGS) search.o $(CFLAGS)
+
 sort.o: sort.c
 	$(CC) -c sort.c $(BFLAGS) sort.o $(CFLAGS)
+
+sort_demo.o: sort_demo.c
+	$(CC) -c sort_demo.c $(BFLAGS) sort_demo.o $(CFLAGS)
+
+menu_sort.o: menu_sort.c
+	$(CC) -c menu_sort.c $(BFLAGS) menu_sort.o $(CFLAGS)
 
 c_test.o: c_test.c
 	$(CC) -c c_test.c $(BFLAGS) c_test.o $(CFLAGS)
@@ -91,5 +113,23 @@ c_test.o: c_test.c
 tree.o: tree.c
 	$(CC) -c tree.c $(BFLAGS) tree.o $(CFLAGS)
 
+tree_traverse.o: tree_traverse.c
+	$(CC) -c tree_traverse.c $(BFLAGS) tree_traverse.o $(CFLAGS)
+
+tree_derivative.o: tree_derivative.c
+	$(CC) -c tree_derivative.c $(BFLAGS) tree_derivative.o $(CFLAGS)
+
+menu_tree.o: menu_tree.c
+	$(CC) -c menu_tree.c $(BFLAGS) menu_tree.o $(CFLAGS)
+
 menu_bignum.o: menu_bignum.c
 	$(CC) -c menu_bignum.c $(BFLAGS) menu_bignum.o $(CFLAGS)
+
+menu_c_test.o: menu_c_test.c
+	$(CC) -c menu_c_test.c $(BFLAGS) menu_c_test.o $(CFLAGS)
+
+menu_list.o: menu_list.c
+	$(CC) -c menu_list.c $(BFLAGS) menu_list.o $(CFLAGS)
+
+menu_string_match.o: menu_string_match.c
+	$(CC) -c menu_string_match.c $(BFLAGS) menu_string_match.o $(CFLAGS)

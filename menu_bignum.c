@@ -1,20 +1,145 @@
 #include "menu_bignum.h"
 
-typedef enum _OPT_CODE_BIGNUM
-{
-    OPT_CODE_BIGNUM_HELP = 0,
-    OPT_CODE_BIGNUM_DEMO = 1,
-} OPT_CODE_BIGNUM;
 
-static const struct _MENU_OPTION bignum_options[] =
+const menu_option_t  menu_config_bignum =
+    {"bignum",  's',    menu_func_bignum,   "Big number related implementations."};
+
+static const menu_option_t _menu_options[] =
 {
-    {"--help", OPT_CODE_BIGNUM_HELP, '-', "Display this summary"},
-    {"--demo", OPT_CODE_BIGNUM_DEMO, 's', "Demo big num"},
+    {"--help", '-',     NULL,               "Display this summary.",},
+    {"--demo", '-',     demo_bignum,        "Demo GMP library.",},
+    {"--expr", 's',     bignum_expr,        "Evaluate the math expression.",    "--expr [-z] [-q] [-f] [-p prec] [-b base] expression"},
 
     {NULL}
 };
-#if (CONFIG_ENABLE_LIBEXPR)
-void run_expr (int type, int base, unsigned long prec, char *str)
+
+static void run_expr(int type, int base, unsigned long prec, char *str);
+
+ret_code menu_func_bignum(int argc, char **argv)
+{
+    int ret;
+    const char *func_name = menu_config_bignum.name;
+
+    ret = menu_opt_check(_menu_options);
+    if (ret != MENU_RET_SUCCESS) {
+        printf("menu_opt_check failed (%d)\n", ret);
+        exit(ret);
+    }
+
+    ret = menu_opt_process(argc, argv, func_name, _menu_options);
+    if (ret != MENU_RET_SUCCESS) {
+        if (ret != MENU_RET_EOF) {
+            printf("menu_opt_process failed (%d)\n", ret);
+            menu_func_help(func_name, _menu_options);
+            exit(ret);
+        }
+    }
+
+    return ret;
+}
+
+ret_code demo_bignum(int argc, char **argv)
+{
+    int type = 'f';
+    int base = 0;
+    unsigned long prec = 32;
+    char *arg = "2**64";
+
+    run_expr(type, base, prec, arg);
+    return MENU_RET_SUCCESS;
+}
+
+ret_code bignum_expr(int argc, char **argv)
+{
+    int ret = MENU_RET_FAIL;
+    int type = 'z';
+    int base = 0;
+    unsigned long prec = 64;
+    int seen_expr = 0;
+    int opt;
+    char *arg;
+
+    while (1) {
+        arg = menu_get_arg_inc(NULL, NULL);
+        if (arg == NULL)
+            break;
+
+        if (arg[0] == '-') {
+            while (1) {
+                opt = *++arg;
+
+                switch (opt) {
+                case '\0':
+                    goto end_opt;
+
+                case 'f':
+                case 'q':
+                case 'z':
+                    type = opt;
+                    break;
+
+                case 'b':
+                    if (*++arg == '\0') {
+                        arg = menu_get_arg(NULL, NULL);
+                        if (arg == NULL) {
+need_arg:
+                            fprintf (stderr, "Need argument for -%c\n", opt);
+                            goto exit;
+                        }
+                    }
+                    base = atoi(arg);
+                    goto end_opt;
+
+                case 'p':
+                    if (*++arg == '\0') {
+                        arg = menu_get_arg(NULL, NULL);
+                        if (arg == NULL)
+                            goto need_arg;
+                    }
+                    prec = atoi(arg);
+                    goto end_opt;
+
+                case '-':
+                    if (*++arg != '\0') {
+                        /* no "--foo" options */
+                        fprintf (stderr, "Unrecognised option --%s\n", arg);
+                        goto exit;
+                    }
+
+                    /* stop option interpretation at "--" */
+                    while (1) {
+                        arg = menu_get_arg(NULL, NULL);
+                        if (arg == NULL)
+                            goto done;
+                        run_expr(type, base, prec, arg);
+                        seen_expr = 1;
+                    }
+
+                default:
+                    fprintf (stderr, "Unrecognised option -%c\n", opt);
+                    goto exit;
+                }
+            }
+end_opt:
+            ;
+        } else {
+            // run expression with default settings
+            run_expr(type, base, prec, arg);
+            seen_expr = 1;
+        }
+    }
+done:
+    if (!seen_expr) {
+        printf("No expression...\n", argv[0]);
+        goto exit;
+    }
+
+    ret = MENU_RET_SUCCESS;
+exit:
+    return ret;
+}
+
+void run_expr(int type, int base, unsigned long prec, char *str)
 {
     int outbase = (base == 0 ? 10 : base);
     int ret;
@@ -94,81 +219,4 @@ void run_expr (int type, int base, unsigned long prec, char *str)
     }
         break;
     }
-}
-#endif
-ret_code menu_func_bignum(int argc, char **argv)
-{
-    MENU_RET_CODE ret;
-    int opt_code;
-
-    printf("%s\n", __FUNCTION__);
-
-    ret = menu_opt_init(argc, 3, argv, bignum_options);
-    if (ret != MENU_RET_SUCCESS) {
-        printf("menu_opt_init failed (%d)\n", ret);
-
-        /* If fail to get an option, we show available options for user */
-        menu_opt_help("algo bignum", bignum_options);
-        return ret;
-    }
-
-    while (1) {
-        ret = menu_get_opt_code(&opt_code, bignum_options);
-        if (ret != MENU_RET_SUCCESS) {
-            if (ret != MENU_RET_EOF) {
-                printf("menu_get_opt_code failed (%d)\n", ret);
-
-                /* If fail to get an option, we show available options for user */
-                menu_opt_help("algo bignum", bignum_options);
-                return ret;
-            }
-            break;
-        }
-
-        switch (opt_code) {
-        case OPT_CODE_BIGNUM_HELP:
-            menu_opt_help("algo bignum", bignum_options);
-            break;
-
-        case OPT_CODE_BIGNUM_DEMO:
-            // menu_get_arg(0, NULL, NULL);
-            bignum_test((char *)menu_get_arg(0, NULL, NULL));
-            break;
-
-        default:
-            break;
-        }
-    }
-
-    return ret;
-}
-
-void bignum_test(char *str)
-{
-#if !(CONFIG_ENABLE_LIBEXPR)
-    int base = 10;
-    int outbase = (base == 0 ? 10 : base);
-
-    printf("bignum_test start>>>\n");
-
-    mpz_t mpz_a;
-    mpz_init_set_ui(mpz_a, 55L);
-
-    printf ("base %d: ", base);
-    printf ("result ");
-    mpz_out_str (stdout, outbase, mpz_a);
-    printf ("\n");
-
-    // HMODULE handle = LoadLibrary("C:\\Workspace\\GMP\\.libs\\libgmp-10.dll");
-    // FreeLibrary(handle);
-
-    printf("bignum_test end<<<\n");
-#else
-    int type = 'f';
-    int base = 0;
-    unsigned long prec = 32;
-    char *arg = str;
-
-    run_expr(type, base, prec, arg);
-#endif
 }

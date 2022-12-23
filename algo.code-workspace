@@ -61,7 +61,14 @@
             "gmp.h": "c",
             "menu_bignum.h": "c",
             "menu.h": "c",
-            "expr.h": "c"
+            "expr.h": "c",
+            "tree_derivateve.h": "c",
+            "tree_traverse.h": "c",
+            "menu_sort.h": "c",
+            "sort_demo.h": "c",
+            "search.h": "c",
+            "menu_c_TEST.H": "cpp",
+            "menu_string_match.h": "c"
         }
 	}
 }

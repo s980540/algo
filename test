@@ -653,8 +653,8 @@ char * simplifyPath(char * path){
 
 
 typedef unsigned int u32;
-typedef int (*PCOMPARE_FUNC)(const void *, const void *, size_t size);
-typedef void (*PSWAP_FUNC)(void *, void *, size_t size);
+typedef int (*compare_func_t)(const void *, const void *, size_t size);
+typedef void (*swap_func_t)(void *, void *, size_t size);
 
 void u32_swap(void *a, void *b, size_t size)
 {
@@ -674,8 +674,8 @@ static void max_heapify(
     size_t idx,
     size_t num,
     size_t size,
-    PCOMPARE_FUNC comp,
-    PSWAP_FUNC swap)
+    compare_func_t comp,
+    swap_func_t swap)
 {
     size_t l = 2 * idx + 1;
     size_t r = 2 * idx + 2;
@@ -700,8 +700,8 @@ static void build_max_heap(
     void *ibase,
     size_t num,
     size_t size,
-    PCOMPARE_FUNC comp,
-    PSWAP_FUNC swap)
+    compare_func_t comp,
+    swap_func_t swap)
 {
     size_t i;
     for (i = (num - 1) >> 1; ; i--) {
@@ -716,8 +716,8 @@ void heap_sort(
     void *ibase,
     size_t num,
     size_t size,
-    PCOMPARE_FUNC comp,
-    PSWAP_FUNC swap)
+    compare_func_t comp,
+    swap_func_t swap)
 {
     size_t i;
 

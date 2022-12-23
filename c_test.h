@@ -8,7 +8,10 @@
 #include "utility.h"
 #include "menu.h"
 
-ret_code menu_func_c_test(int argc, char **argv);
-void printd(int n);
+#include "sort.h"
+#include "search.h"
+#include "file.h"
+
+void c_test(void);
 
 #endif
