@@ -13,5 +13,7 @@
 #include "file.h"
 
 void c_test(void);
+ret_code songlist_to_wikitable(void);
+ret_code csv_to_gallerytable(void);
 
 #endif

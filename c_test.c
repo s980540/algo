@@ -1333,6 +1333,87 @@ static long file_get_line_num(FILE *fp)
     return i;
 }
 
+static int file_csv_to_gallerytable(ALGO_FILE *s_file, ALGO_FILE *w_file)
+{
+    int ret = ALGO_ERROR_UNKNOWN;
+    int r, l, line_num;
+    char *sp, *ep;
+
+    // Set the location of file position indicator to the beginning
+    fseek(s_file->fp, 0, SEEK_SET);
+    fseek(w_file->fp, 0, SEEK_SET);
+
+    // Start to parse the file
+    for (r = 0; r < 2; r++) {
+        fseek(s_file->fp, 0, SEEK_SET);
+        line_num = file_get_line_num(s_file->fp);
+
+        printf("line_num: %d\n", line_num);
+
+        if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
+            ret = ALGO_ERROR_READ_FILE;
+            goto exit;
+        }
+        sp = strchr(str, '\n');
+        *sp = '\0';
+
+        if (r == 0) {
+            fprintf(w_file->fp, "<mobileonly>\n");
+            fprintf(w_file->fp, "<gallery widths=240px heights=160px mode=\"packed-hover\">\n");
+        } else {
+            fprintf(w_file->fp, "<nomobile>\n");
+            fprintf(w_file->fp, "<gallery widths=480px heights=320px  mode=\"packed-hover\">\n");
+        }
+
+        for (l = 1; l < line_num; l++) {
+            if (l == 49)
+                l = 49;
+            if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
+                ret = ALGO_ERROR_READ_FILE;
+                goto exit;
+            }
+            sp = str;
+            ep = strchr(sp, '\n');
+            *ep = '\0';
+
+            // Get file name
+            ep = strchr(sp, ',');
+            *ep++ = '\0';
+            strcpy(time_str, sp);
+
+            // Get twitter link
+            sp = ep;
+            ep = strchr(sp, ',');
+            *ep++ = '\0';
+            strcpy(yt_url, sp);
+
+            sp = ep;
+            if (*sp == ',')
+                fprintf(w_file->fp, "File:%s|%s\n", time_str, yt_url);
+            else {
+                // Get painter ID
+                ep = strchr(sp, ',');
+                *ep++ = '\0';
+                strcpy(id, sp);
+                // Get twitter url
+                strcpy(singer, ep);
+                fprintf(w_file->fp, "File:%s|%s<br>繪師: [%s %s]\n", time_str, yt_url, singer, id);
+            }
+        }
+
+        fprintf(w_file->fp, "</gallery>\n");
+        if (r == 0)
+            fprintf(w_file->fp, "</mobileonly>\n");
+        else
+            fprintf(w_file->fp, "</nomobile>\n");
+    }
+
+    ret = ALGO_SUCCESS;
+
+exit:
+    return ret;
+}
+
 static int file_songlist_to_wikitable(ALGO_FILE *s_file, ALGO_FILE *w_file)
 {
     int ret = ALGO_ERROR_UNKNOWN;
@@ -1401,21 +1482,7 @@ static int file_songlist_to_wikitable(ALGO_FILE *s_file, ALGO_FILE *w_file)
             fprintf(w_file->fp, "%s\n", "{| class=\"wikitable\" <!--style=\"margin: 1em auto 1em auto;\"-->");
         }
 
-        // if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
-        //     ret = ALGO_ERROR_READ_FILE;
-        //     goto exit;
-        // }
-        // sp = strchr(str, '\n');
-        // *sp = '\0';
-
         fprintf(w_file->fp, "|+\n");
-        // if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
-        //     ret = ALGO_ERROR_READ_FILE;
-        //     goto exit;
-        // }
-        // sp = strchr(str, '\n');
-        // *sp = '\0';
-        // fprintf(w_file->fp, "%s\n", str);
         fprintf(w_file->fp, "|-\n");
         printf("id: %s\n", id);
         printf("start: %s\n", start);
@@ -1428,7 +1495,6 @@ static int file_songlist_to_wikitable(ALGO_FILE *s_file, ALGO_FILE *w_file)
         }
         fprintf(w_file->fp, "| style=\"width: 3em;\" | 曲目 || style=\"width: 10em;\" | 歌曲名稱 || style=\"width: 13em;\" | 原唱 || style=\"width: 5em;\" | 時間 || 備註\n");
 
-        // return 0;
         for (l = 3; l < line_num; l++) {
             if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
                 ret = ALGO_ERROR_READ_FILE;
@@ -1476,10 +1542,6 @@ static int file_songlist_to_wikitable(ALGO_FILE *s_file, ALGO_FILE *w_file)
             while (*sp == ' ')
                 sp++;
 
-            // sp = strchr(sp, '\0');
-            // sp++;
-            // printf("%s", sp);
-
             // Get singer
             tp = sp;
             sp = strchr(sp, '/');
@@ -1499,7 +1561,6 @@ static int file_songlist_to_wikitable(ALGO_FILE *s_file, ALGO_FILE *w_file)
             printf("%s %s\n", songname, singer);
 
             fprintf(w_file->fp, "|-\n");
-            // fprintf(w_file->fp, "| %d || %s || %s || %s || \n", index, songname, singer);
             if (index != -1)
                 fprintf(w_file->fp, "| %d || %s || %s || [https://www.youtube.com/watch?v=%s&t=%ds %s]\n"
                         , index, songname, singer, id, time2, time_str);
@@ -1521,12 +1582,56 @@ exit:
     return ret;
 }
 
+ret_code csv_to_gallerytable(void)
+{
+    int i, ret = E_UNKNOWN, ferr;
+
+    ALGO_FILE s_file = {.fp = NULL, .file_name = "imagefile.csv"};
+    ALGO_FILE w_file = {.fp = NULL, .file_name = "gallerytable.txt"};
+    FILE *sfp, *wfp;
+
+    if (file_open(&s_file, s_file.file_name, "r"))
+        goto exit;
+
+    if (file_open(&w_file, w_file.file_name, "w"))
+        goto exit;
+
+    file_csv_to_gallerytable(&s_file, &w_file);
+
+    if (feof(s_file.fp)) {
+        printf("feof\n");
+    }
+
+    ferr = ferror(s_file.fp);
+    if (ferr) {
+        printf("ferror: %d\n", ferr);
+        perror("");
+        clearerr(s_file.fp);
+        goto exit;
+    }
+
+    if (file_close(&s_file))
+        return ret;
+
+    if (file_close(&w_file))
+        return ret;
+
+
+    ret = 0;
+exit:
+    if (s_file.fp)
+        file_close(&s_file);
+
+    if (w_file.fp)
+        file_close(&w_file);
+
+    return ret;
+}
+
 ret_code songlist_to_wikitable(void)
 {
     int i, ret = E_UNKNOWN, ferr;
 
-    const char *yt_url = "";
-    const char *file_name = "songlist.txt";
     ALGO_FILE s_file = {.fp = NULL, .file_name = "songlist.txt"};
     ALGO_FILE w_file = {.fp = NULL, .file_name = "wikitable.txt"};
     FILE *sfp, *wfp;
@@ -1665,6 +1770,7 @@ void c_test(void)
     // }
 
     // printf("len: %d\n", lengthOfLongestSubstring(0));
-    songlist_to_wikitable();
+    // songlist_to_wikitable();
+    // csv_to_gallerytable();
     printf("%s end <<<\n", __FUNCTION__);
 }

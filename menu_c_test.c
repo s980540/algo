@@ -5,8 +5,10 @@ const menu_option_t  menu_config_c_test =
 
 static const menu_option_t _menu_options[] =
 {
-    {"--help",      '-',     NULL,          "Display this summary.",},
-    {"--run",       '-',     run_c_test,    "Run C test functions.",},
+    {"--help",                      '-',    NULL,                      "Display this summary.",},
+    {"--run",                       '-',    run_c_test,                "Run C test functions.",},
+    {"--run-songlist-to-wikitable", '-',    run_songlist2wikitable,    "Convert songlist to wiki table.",},
+    {"--run-csv-to-gallerytable",   '-',    run_csv2gallerytable,      "Convert image csv to gallery table.",},
 
     {NULL}
 };
@@ -40,4 +42,16 @@ ret_code run_c_test(int argc, char **argv)
 {
     c_test();
     return MENU_RET_SUCCESS;
+}
+
+ret_code run_songlist2wikitable(int argc, char **argv)
+{
+
+    return songlist_to_wikitable();
+}
+
+ret_code run_csv2gallerytable(int argc, char ** argv)
+{
+
+    return csv_to_gallerytable();
 }

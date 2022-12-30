@@ -68,7 +68,7 @@ typedef struct _right_threaded_tree_t {
 //     printf(#name "->rtag %d\n", (p)->rtag); \
 //     printf(#name "->rlink %c\n", ((p)->rlink == (head)) ? 'H' : ((p)->rlink == NULL) ? 'N' : tree_entry((p)->rlink, type, member)->data);
 
-static inline void INIT_TTREE_HEAD(struct _threaded_tree *ttree)
+static inline void INIT_TTREE_HEAD(struct _threaded_tree_t *ttree)
 {
     ttree->llink = ttree;
     ttree->ltag = 1;
