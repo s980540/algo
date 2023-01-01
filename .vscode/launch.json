@@ -12,7 +12,7 @@
             // "args": ["bignum"],
             // "args": ["bignum", "--help"],
             // "args": ["bignum", "--expr", "2**64"],
-            "args": ["c-test", "--run"],
+            "args": ["c-test", "--run-csv-to-gallerytable"],
             "stopAtEntry": true,
             "cwd": "C:\\Workspace\\algo",
             "environment": [],

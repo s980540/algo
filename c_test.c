@@ -1374,6 +1374,12 @@ static int file_print_page_navigation_nomobile(ALGO_FILE *w_file, int header)
     fprintf(w_file->fp, "</nomobile>\n");
 }
 
+static char _file_name[STRING_BUF_SIZE];
+static char _source_url[STRING_BUF_SIZE];
+static char _title[STRING_BUF_SIZE];
+static char _twitter_id[STRING_BUF_SIZE];
+static char _twitter_url[STRING_BUF_SIZE];
+
 static int file_csv_to_gallerytable(ALGO_FILE *s_file, ALGO_FILE *w_file)
 {
     int ret = ALGO_ERROR_UNKNOWN;
@@ -1385,7 +1391,7 @@ static int file_csv_to_gallerytable(ALGO_FILE *s_file, ALGO_FILE *w_file)
     fseek(w_file->fp, 0, SEEK_SET);
 
     fprintf(w_file->fp, "== 主題標籤/Hashtag ==\n");
-    fprintf(w_file->fp, "[https://mobile.twitter.com/search?q=%%23NemomoArt #NemomoArt (粉絲藝術)]\n\n");
+    fprintf(w_file->fp, "請參見Twitter hashtag: [https://mobile.twitter.com/search?q=%%23NemomoArt #NemomoArt]\n\n");
     fprintf(w_file->fp, "== 畫廊 ==\n");
 
     // Start to parse the file
@@ -1411,8 +1417,6 @@ static int file_csv_to_gallerytable(ALGO_FILE *s_file, ALGO_FILE *w_file)
         }
 
         for (l = 1; l < line_num; l++) {
-            if (l == 49)
-                l = 49;
             if (fgets(str, STRING_BUF_SIZE, s_file->fp) == NULL) {
                 ret = ALGO_ERROR_READ_FILE;
                 goto exit;
@@ -1424,25 +1428,32 @@ static int file_csv_to_gallerytable(ALGO_FILE *s_file, ALGO_FILE *w_file)
             // Get file name
             ep = strchr(sp, ',');
             *ep++ = '\0';
-            strcpy(time_str, sp);
+            strcpy(_file_name, sp);
 
-            // Get twitter link
+            // Get source url
             sp = ep;
             ep = strchr(sp, ',');
             *ep++ = '\0';
-            strcpy(yt_url, sp);
+            strcpy(_source_url, sp);
 
             sp = ep;
             if (*sp == ',')
-                fprintf(w_file->fp, "File:%s|%s\n", time_str, yt_url);
+                fprintf(w_file->fp, "File:%s|%s\n", _file_name, _source_url);
             else {
-                // Get painter ID
+                // Get title
                 ep = strchr(sp, ',');
                 *ep++ = '\0';
-                strcpy(id, sp);
+                strcpy(_title, sp);
+                // Get twitter id
+                sp = ep;
+                ep = strchr(sp, ',');
+                *ep++ = '\0';
+                strcpy(_twitter_id, sp);
                 // Get twitter url
-                strcpy(singer, ep);
-                fprintf(w_file->fp, "File:%s|%s<br>繪師: [%s %s]\n", time_str, yt_url, singer, id);
+                strcpy(_twitter_url, ep);
+                fprintf(w_file->fp, "File:%s|%s<br>%s: [%s %s]\n",
+                    _file_name, _source_url,
+                    _title, _twitter_url, _twitter_id);
             }
         }
 
