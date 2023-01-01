@@ -1333,6 +1333,47 @@ static long file_get_line_num(FILE *fp)
     return i;
 }
 
+static int file_print_page_navigation_mobileonly(ALGO_FILE *w_file, int header)
+{
+    if (header)
+        fprintf(w_file->fp, "== 頁面導覽 ==\n");
+    fprintf(w_file->fp, "<mobileonly>\n");
+    fprintf(w_file->fp, "{| class=\"wikitable\"\n");
+    fprintf(w_file->fp, "|+\n");
+    fprintf(w_file->fp, "!首頁 ▶ [[首頁]]\n");
+    fprintf(w_file->fp, "!涅默介紹 ▶ [[涅默Nemesis]]\n");
+    fprintf(w_file->fp, "|-\n");
+    fprintf(w_file->fp, "!精華列表 ▶ [[精華影片]]\n");
+    fprintf(w_file->fp, "!歌回列表 ▶ [[歌回]]\n");
+    fprintf(w_file->fp, "|-\n");
+    fprintf(w_file->fp, "!直播記錄 ▶ [[直播記錄]]\n");
+    fprintf(w_file->fp, "!涅默語音 ▶ [[涅默語音庫]]\n");
+    fprintf(w_file->fp, "|-\n");
+    fprintf(w_file->fp, "!涅默畫廊 ▶ [[畫廊]]\n");
+    fprintf(w_file->fp, "!編輯手冊 ▶ [[編輯導覽]]\n");
+    fprintf(w_file->fp, "|}\n");
+    fprintf(w_file->fp, "</mobileonly>\n");
+}
+
+static int file_print_page_navigation_nomobile(ALGO_FILE *w_file, int header)
+{
+    if (header)
+        fprintf(w_file->fp, "== 頁面導覽 ==\n");
+    fprintf(w_file->fp, "<nomobile>\n");
+    fprintf(w_file->fp, "{| class=\"wikitable\"\n");
+    fprintf(w_file->fp, "|+\n");
+    fprintf(w_file->fp, "!首頁 ▶ [[首頁]]\n");
+    fprintf(w_file->fp, "!涅默介紹 ▶ [[涅默Nemesis]]\n");
+    fprintf(w_file->fp, "!精華影片 ▶ [[精華影片]]\n");
+    fprintf(w_file->fp, "!歌回列表 ▶ [[歌回]]\n");
+    fprintf(w_file->fp, "!直播記錄 ▶ [[直播記錄]]\n");
+    fprintf(w_file->fp, "!涅默語音 ▶ [[涅默語音庫]]\n");
+    fprintf(w_file->fp, "!涅默畫廊 ▶ [[畫廊]]\n");
+    fprintf(w_file->fp, "!編輯手冊 ▶ [[編輯導覽]]\n");
+    fprintf(w_file->fp, "|}\n");
+    fprintf(w_file->fp, "</nomobile>\n");
+}
+
 static int file_csv_to_gallerytable(ALGO_FILE *s_file, ALGO_FILE *w_file)
 {
     int ret = ALGO_ERROR_UNKNOWN;
@@ -1342,6 +1383,10 @@ static int file_csv_to_gallerytable(ALGO_FILE *s_file, ALGO_FILE *w_file)
     // Set the location of file position indicator to the beginning
     fseek(s_file->fp, 0, SEEK_SET);
     fseek(w_file->fp, 0, SEEK_SET);
+
+    fprintf(w_file->fp, "== 主題標籤/Hashtag ==\n");
+    fprintf(w_file->fp, "[https://mobile.twitter.com/search?q=%%23NemomoArt #NemomoArt (粉絲藝術)]\n\n");
+    fprintf(w_file->fp, "== 畫廊 ==\n");
 
     // Start to parse the file
     for (r = 0; r < 2; r++) {
@@ -1405,8 +1450,11 @@ static int file_csv_to_gallerytable(ALGO_FILE *s_file, ALGO_FILE *w_file)
         if (r == 0)
             fprintf(w_file->fp, "</mobileonly>\n");
         else
-            fprintf(w_file->fp, "</nomobile>\n");
+            fprintf(w_file->fp, "</nomobile>\n\n");
     }
+
+    file_print_page_navigation_mobileonly(w_file, 1);
+    file_print_page_navigation_nomobile(w_file, 0);
 
     ret = ALGO_SUCCESS;
 
