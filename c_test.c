@@ -1391,7 +1391,7 @@ static int file_csv_to_gallerytable(ALGO_FILE *s_file, ALGO_FILE *w_file)
     fseek(w_file->fp, 0, SEEK_SET);
 
     fprintf(w_file->fp, "== 主題標籤/Hashtag ==\n");
-    fprintf(w_file->fp, "請參見Twitter hashtag: [https://mobile.twitter.com/search?q=%%23NemomoArt #NemomoArt]\n\n");
+    fprintf(w_file->fp, "請參見Twitter hashtag: [https://twitter.com/search?q=%%23NemomoArt #NemomoArt]\n\n");
     fprintf(w_file->fp, "== 畫廊 ==\n");
 
     // Start to parse the file
