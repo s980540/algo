@@ -598,7 +598,6 @@ char * minRemoveToMakeValid(char * s)
 
 static int int_comp(const void *a, const void *b, size_t size)
 {
-    // printf("int_comp %2d %5d %5d\n", *(int *)a - *(int *)b, *(int *)a, *(int *)b);
     return *(int *)a - *(int *)b;
 }
 
@@ -1832,4 +1831,92 @@ void c_test(void)
     // songlist_to_wikitable();
     // csv_to_gallerytable();
     printf("%s end <<<\n", __FUNCTION__);
+}
+
+// Calculate sum of sequence 1*2 + 2*3 + 3*4 +...+(n-1)*n
+int sum_of_sequence_1(int n)
+{
+    int i, r = 0;
+
+    for (i = 1; i < n; i++)
+        r = r + i * (i + 1);
+
+    return r;
+}
+
+int sum_of_sequence_2(int n)
+{
+    if (n <= 1)
+        return 0;
+    else
+        return (n - 1) * n + sum_of_sequence_2(n - 1);
+}
+
+void c_test_quanta(int n)
+{
+    printf("sum1: %d\n", sum_of_sequence_1(n));
+    printf("sum2: %d\n", sum_of_sequence_2(n));
+}
+
+void *InitBuffer()
+{
+    // char _buf[10] = {};
+    static char _buf[13] = {};
+    return _buf;
+}
+
+// If this is a main function
+int c_test_inventec()
+{
+    // char *buf = InitBuffer();
+    char *buf = (char *)InitBuffer();
+    strcpy(buf, "Hello World\n");
+    printf("%s", buf);
+}
+
+void c_test_elen_1(void)
+{
+    int a[] = {6, 7, 8, 9, 10};
+    int *p = a;
+    printf("%X\n",a);
+    printf("%X\n",&a);
+    *(p++)+=123;
+    // *(++p)+=123;
+
+    printf("%d\n", *p);
+
+    for (int i = 0; i < 5; i++)
+        printf("%d ", a[i]);
+
+
+    printf("\n");
+    printf("%d\n", *p);
+}
+
+#define X_MAX   (10)
+#define Y_MAX   (9999)
+#define VAL     (20)
+
+void c_test_elen_2(void)
+{
+    int v, x, y;
+
+    // Ans 1
+    v = VAL;
+    y = v / X_MAX;
+    x = v % X_MAX;
+    printf("x=%d, y=%d\n", x, y);
+
+    // Ans 2
+    for (y = 0; y < Y_MAX; y++) {
+        for (x = 0; x < X_MAX; x++) {
+            if (v == y * X_MAX + x)
+                goto exit;
+        }
+    }
+
+exit:
+    printf("x=%d, y=%d\n", x, y);
+
+    // Ans3
 }

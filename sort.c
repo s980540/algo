@@ -83,6 +83,20 @@ void quick_sort_r(
     }
 }
 
+/**
+ * @brief In a max-heap, the max-heap property is that for every node i other than
+ * the root, A[parent(i)] >= A[i], that is, the value of a node is at most the
+ * value of its parent. Thus the largest element in a max-heap is stored at the
+ * root, and the subtree rooted at a node contains values no larger than that
+ * contained at the node itself.
+ * @param base An array of numbers
+ * @param ibase An array of indexes
+ * @param idx The index of a root
+ * @param num The size of an element in bytes
+ * @param comp Compare function
+ * @param swap Swap function
+ * @retval None
+ */
 static void max_heapify(
     void *base,
     void *ibase,
@@ -96,7 +110,7 @@ static void max_heapify(
     size_t r = 2 * idx + 2;
     size_t largest = idx;
 
-    if ((l < num) && (comp(base + l * size, base + idx * size, size) > 0))
+    if ((l < num) && (comp(base + l * size, base + largest * size, size) > 0))
         largest = l;
 
     if ((r < num) && (comp(base + r * size, base + largest * size, size) > 0))
@@ -106,10 +120,26 @@ static void max_heapify(
         swap(base + idx * size, base + largest * size, size);
         if (ibase)
             swap(ibase + idx * size, ibase + largest * size, size);
+
+        /* Check if remaining subtrees satify max-heap property */
         max_heapify(base, ibase, largest, num, size, comp, swap);
     }
 }
 
+/**
+ * @brief In a max-heap, the max-heap property is that for every node i other than
+ * the root, A[parent(i)] >= A[i], that is, the value of a node is at most the
+ * value of its parent. Thus the largest element in a max-heap is stored at the
+ * root, and the subtree rooted at a node contains values no larger than that
+ * contained at the node itself.
+ * @param base An array of numbers
+ * @param ibase An array of indexes
+ * @param num The element count of the input array
+ * @param size The size of an element in bytes
+ * @param comp Compare function
+ * @param swap Swap function
+ * @retval None
+ */
 static void build_max_heap(
     void *base,
     void *ibase,
@@ -126,6 +156,16 @@ static void build_max_heap(
     }
 }
 
+/**
+ * @brief Implementation of heep sort algorithm
+ * @param base An array of numbers
+ * @param ibase An array of indexes
+ * @param num The element number of the input array
+ * @param size The size of an element in bytes
+ * @param comp Compare function
+ * @param swap Swap function
+ * @retval None
+ */
 void heap_sort(
     void *base,
     void *ibase,
