@@ -13,7 +13,6 @@
 #include "c_test.h"
 #include "sort.h"
 #include "tree.h"
-#include "menu_bignum.h"
 #include "menu_tree.h"
 #include "menu_sort.h"
 #include "menu_c_test.h"
@@ -24,7 +23,6 @@ static menu_option_t *_menu_options;
 
 void main_init(void)
 {
-    menu_register(&_menu_options, &menu_config_bignum);
     menu_register(&_menu_options, &menu_config_tree);
     menu_register(&_menu_options, &menu_config_sort);
     menu_register(&_menu_options, &menu_config_c_test);

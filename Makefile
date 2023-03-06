@@ -12,8 +12,7 @@ OBJ       = main.o menu.o data_struct.o utility.o \
 			c_test.o menu_c_test.o\
 			sort.o sort_demo.o menu_sort.o \
 			search.o \
-			tree.o tree_traverse.o tree_derivative.o menu_tree.o \
-			menu_bignum.o
+			tree.o tree_traverse.o tree_derivative.o menu_tree.o
 LINKOBJ   = main.o menu.o data_struct.o utility.o \
 			mbr.o gpt.o fat.o evp.o file.o serial.o file_ksoc_array_generation.o \
 			string_match.o menu_string_match.o\
@@ -21,13 +20,10 @@ LINKOBJ   = main.o menu.o data_struct.o utility.o \
 			c_test.o menu_c_test.o \
 			sort.o sort_demo.o menu_sort.o \
 			search.o \
-			tree.o tree_traverse.o tree_derivative.o menu_tree.o \
-			menu_bignum.o \
-			C:/Workspace/gmp-6.2.1/demos/expr/libexpr.a
+			tree.o tree_traverse.o tree_derivative.o menu_tree.o
 LIBS      = -L"C:/MinGW/lib" \
 			-L"C:/MinGW/mingw32/lib" \
 			-L"/usr/local/lib" \
-			-lgmp \
 			-static-libgcc -m32
 INCS      = -I"C:/MinGW/include" \
 			-I"C:/MinGW/mingw32/include" \
@@ -121,9 +117,6 @@ tree_derivative.o: tree_derivative.c
 
 menu_tree.o: menu_tree.c
 	$(CC) -c menu_tree.c $(BFLAGS) menu_tree.o $(CFLAGS)
-
-menu_bignum.o: menu_bignum.c
-	$(CC) -c menu_bignum.c $(BFLAGS) menu_bignum.o $(CFLAGS)
 
 menu_c_test.o: menu_c_test.c
 	$(CC) -c menu_c_test.c $(BFLAGS) menu_c_test.o $(CFLAGS)
