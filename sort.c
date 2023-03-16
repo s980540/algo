@@ -89,6 +89,92 @@ void quick_sort_r(
  * value of its parent. Thus the largest element in a max-heap is stored at the
  * root, and the subtree rooted at a node contains values no larger than that
  * contained at the node itself.
+ * @param nums An array of numbers
+ * @param idxs An array of indexes
+ * @param idx The index of a root
+ * @param numsSize The size of an element in bytes
+ * @param comp Compare function
+ * @param swap Swap function
+ * @retval None
+ */
+void max_heapify_int(int *nums, int *idxs, size_t idx, size_t numsSize)
+{
+    size_t l = 2 * idx + 1;
+    size_t r = 2 * idx + 2;
+    size_t max = idx;
+
+    if ((l < numsSize) && (nums[l] > nums[max]))
+        max = l;
+
+    if ((r < numsSize) && (nums[r] > nums[max]))
+        max = r;
+
+    if (max != idx) {
+        int tmp = nums[idx];
+        nums[idx] = nums[max];
+        nums[max] = tmp;
+
+        if (idxs != NULL) {
+            tmp = idxs[idx];
+            idxs[idx] = idxs[max];
+            idxs[max] = tmp;
+        }
+
+        max_heapify_int(nums, idxs, max, numsSize);
+    }
+}
+
+/**
+ * @brief In a max-heap, the max-heap property is that for every node i other than
+ * the root, A[parent(i)] >= A[i], that is, the value of a node is at most the
+ * value of its parent. Thus the largest element in a max-heap is stored at the
+ * root, and the subtree rooted at a node contains values no larger than that
+ * contained at the node itself.
+ * @param nums An array of numbers
+ * @param idxs An array of indexes
+ * @param numsSize The element count of the input array
+ * @retval None
+ */
+static void build_max_heap_int(int *nums, int *idxs, size_t numsSize)
+{
+    for (size_t i = (numsSize - 1) >> 1; ;i--) {
+        max_heapify_int(nums, idxs, i, numsSize);
+        if (i == 0)
+            break;
+    }
+}
+
+/**
+ * @brief Implementation of the heap sort algorithm
+ * @param nums An array of numbers
+ * @param idxs An array of indexes
+ * @param numsSize The element number of the input array
+ * @retval None
+ */
+void heap_sort_int(int *nums, int *idxs, size_t numsSize)
+{
+    build_max_heap_int(nums, idxs, numsSize);
+    for (size_t i = numsSize - 1; i > 0; i--) {
+        int tmp = nums[0];
+        nums[0] = nums[i];
+        nums[i] = tmp;
+
+        if (idxs != NULL) {
+            tmp = idxs[0];
+            idxs[0] = idxs[i];
+            idxs[i] = tmp;
+        }
+        numsSize = numsSize - 1;
+        max_heapify_int(nums, idxs, 0, numsSize);
+    }
+}
+
+/**
+ * @brief In a max-heap, the max-heap property is that for every node i other than
+ * the root, A[parent(i)] >= A[i], that is, the value of a node is at most the
+ * value of its parent. Thus the largest element in a max-heap is stored at the
+ * root, and the subtree rooted at a node contains values no larger than that
+ * contained at the node itself.
  * @param base An array of numbers
  * @param ibase An array of indexes
  * @param idx The index of a root
@@ -157,7 +243,7 @@ static void build_max_heap(
 }
 
 /**
- * @brief Implementation of heep sort algorithm
+ * @brief Implementation of the heap sort algorithm
  * @param base An array of numbers
  * @param ibase An array of indexes
  * @param num The element number of the input array

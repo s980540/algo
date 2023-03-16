@@ -41,10 +41,16 @@ ret_code menu_func_c_test(int argc, char **argv)
 
 ret_code run_c_test(int argc, char **argv)
 {
-    c_test_inventec();
-    c_test_elen_1();
-    c_test_elen_2();
+    // c_test_inventec();
+    // c_test_elen_1();
+    // c_test_elen_2();
     // c_test();
+    // c_test_generate_dynamic_random_array_int();
+    // c_test_heap_sort_int();
+    // c_test_binary_search();
+    // c_test_twoSum2();
+    // c_test_threeSumClosest();
+    c_test_getLucky();
     return MENU_RET_SUCCESS;
 }
 

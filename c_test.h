@@ -19,5 +19,11 @@ void c_test_elen_1(void);
 void c_test_elen_2(void);
 ret_code songlist_to_wikitable(void);
 ret_code csv_to_gallerytable(void);
+void c_test_generate_dynamic_random_array_int(void);
+void c_test_heap_sort_int(void);
+void c_test_binary_search(void);
+void c_test_twoSum2(void);
+void c_test_threeSumClosest(void);
+void c_test_getLucky(void);
 
 #endif

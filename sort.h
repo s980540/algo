@@ -36,6 +36,7 @@ void quick_sort(void *base, size_t num, size_t size, compare_func_t comp, swap_f
 void max_heap_insert(void *base, void *key, size_t idx, size_t size, compare_func_t comp, swap_func_t swap);
 void *heap_extract_max(void *base, void *ibase, size_t size, compare_func_t comp, swap_func_t swap);
 void heap_sort(void *base, void *ibase, size_t num, size_t size, compare_func_t comp, swap_func_t swap);
+void heap_sort_int(int *nums, int *idxs, size_t numsSize);
 
 void merge_sort(void *base, size_t num, size_t size, compare_func_t comp, swap_func_t assign);
 void insertion_sort(void *base, size_t num, size_t size, compare_func_t comp, swap_func_t assign);

@@ -1,5 +1,30 @@
 #include "search.h"
 
+int *binary_search_int(int *nums, int key, size_t numsSize)
+{
+    size_t lower = 0;
+    size_t mid = numsSize >> 1;
+    size_t upper = numsSize - 1;
+    int res;
+
+    while (mid >= lower && upper >= mid) {
+        res = key - nums[mid];
+        if ((res < 0) && (mid == 0))
+            return NULL;
+
+        if (res == 0)
+            return nums + mid;
+        else if (res < 0)
+            upper = mid - 1;
+        else if (res > 0)
+            lower = mid + 1;
+
+        mid = lower + ((upper - lower) >> 1);
+    }
+
+    return NULL;
+}
+
 void *binary_search(void *base, void *key, size_t size, size_t num, compare_func_t comp)
 {
     size_t lower = 0;
