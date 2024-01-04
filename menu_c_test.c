@@ -50,7 +50,14 @@ ret_code run_c_test(int argc, char **argv)
     // c_test_binary_search();
     // c_test_twoSum2();
     // c_test_threeSumClosest();
-    c_test_getLucky();
+    // c_test_getLucky();
+    // reverse_words("This is a pen");
+    char str1[] = "This is a pen";
+    reverse_string(str1);
+    printf("reverse_string: %s\n", str1);
+    char str2[] = "This is a pen";
+    reverse_words(str2);
+    printf("reverse_words: %s\n", str2);
     return MENU_RET_SUCCESS;
 }
 

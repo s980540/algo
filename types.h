@@ -20,7 +20,7 @@ typedef unsigned char bool;
 typedef int ret_code;
 
 /**
- *linux/include/linux/types.h 
+ *linux/include/linux/types.h
  */
 // struct list_head {
 //     struct list_head *next, *prev;
@@ -35,7 +35,7 @@ typedef int ret_code;
 // };
 
 /**
- *linux/include/linux/stddef.h 
+ *linux/include/linux/stddef.h
  */
 #define NULL        ((void *)0)
 
@@ -55,7 +55,7 @@ enum {
 #define _offsetend(TYPE, MEMBER) \
     (_offsetof(TYPE, MEMBER) + sizeof(((TYPE *)0)->MEMBER))
 
-/** 
+/**
  * linux/include/linux/kernel.h
  *
  * _container_of - cast a member of a structure out to the containing structure
@@ -68,17 +68,19 @@ enum {
     const typeof( ((type *)0)->member ) *__mptr = (ptr); \
     (type *)( (char *)__mptr - _offsetof(type, member) );})
 
-#define U32_SHIFT 32
-#define U32_MASK ((1ULL << U32_SHIFT) - 1)
+#define U32_SHIFT   (32)
+#define U32_MASK    ((1ULL << U32_SHIFT) - 1)
 
-#define U16_SHIFT 16
-#define U16_MASK ((1 << U16_SHIFT) - 1)
+#define U16_SHIFT   (16)
+#define U16_MASK    ((1 << U16_SHIFT) - 1)
 
-#define DWORD_SHIFT 32
-#define DWORD_MASK ((1ULL << DWORD_SHIFT) - 1)
+#define U8_SHIFT    (8)
+#define U8_MASK     ((1 << U8_SHIFT) - 1)
 
-#define WORD_SHIFT 16
-#define WORD_MASK ((1 << WORD_SHIFT) - 1)
+#define DWORD_SHIFT (32)
+#define DWORD_MASK  ((1ULL << DWORD_SHIFT) - 1)
 
+#define WORD_SHIFT  (16)
+#define WORD_MASK   ((1 << WORD_SHIFT) - 1)
 
 #endif  /* ~ _TYPES_H */

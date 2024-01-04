@@ -25,5 +25,8 @@ void c_test_binary_search(void);
 void c_test_twoSum2(void);
 void c_test_threeSumClosest(void);
 void c_test_getLucky(void);
+// void reverse_words(char* str);
+void reverse_string(char* str);
+void reverse_words(char* str);
 
 #endif

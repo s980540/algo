@@ -68,7 +68,15 @@
             "sort_demo.h": "c",
             "search.h": "c",
             "menu_c_TEST.H": "cpp",
-            "menu_string_match.h": "c"
+            "menu_string_match.h": "c",
+            "utility.h": "c",
+            "stdio.h": "c",
+            "ftl_bt_mics.h": "c",
+            "types.h": "c",
+            "fw_cfg.h": "c",
+            "fw_exp.h": "c",
+            "menu_ftl_unit_test.h": "c",
+            "ftl_domain.h": "c"
         }
 	}
 }

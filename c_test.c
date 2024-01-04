@@ -1980,7 +1980,7 @@ int addDigits2(int num)
     return (num - 1) % 9 + 1;
 }
 
-inline int sumDigits(int val)
+int sumDigits(int val)
 {
     int sum = 0;
     while (val) {
@@ -2008,7 +2008,7 @@ int getLucky(char * s, int k)
 void c_test_getLucky(void)
 {
     printf("%d\n", getLucky("hvmhoasabaymnmsd", 1));
-    printf("%d\n", getLucky2("hvmhoasabaymnmsd", 1));
+    //printf("%d\n", getLucky2("hvmhoasabaymnmsd", 1));
 }
 
 // int nums[] = {4,0,5,-5,3,3,0,-4,-5};
@@ -2219,3 +2219,38 @@ exit:
 
     // Ans3
 }
+
+void reverse_string(char* str) {
+    int len = strlen(str);
+    for (int i = 0; i < len/2; i++) {
+        char temp = str[i];
+        str[i] = str[len-1-i];
+        str[len-1-i] = temp;
+    }
+}
+
+void _reverse_string(char* start, char* end) {
+    while (start < end) {
+        char temp = *start;
+        *start++ = *end;
+        *end-- = temp;
+    }
+}
+
+void reverse_words(char* str) {
+    char* word_start = str;
+    char* temp = str;
+
+    while (*temp) {
+        temp++;
+        if (*temp == '\0') {
+            _reverse_string(word_start, temp-1);
+        }
+        else if (*temp == ' ') {
+            _reverse_string(word_start, temp-1);
+            word_start = temp + 1;
+        }
+    }
+    _reverse_string(str, temp-1);
+}
+

@@ -7,7 +7,7 @@
 #include "menu.h"
 #include "c_test.h"
 
-const menu_option_t menu_config_c_test;
+extern const menu_option_t menu_config_c_test;
 
 ret_code menu_func_c_test(int argc, char **argv);
 ret_code run_c_test(int argc, char **argv);
