@@ -76,7 +76,9 @@
             "fw_cfg.h": "c",
             "fw_exp.h": "c",
             "menu_ftl_unit_test.h": "c",
-            "ftl_domain.h": "c"
+            "ftl_domain.h": "c",
+            "gov_pip_moi.h": "c",
+            "file.h": "c"
         }
 	}
 }

@@ -2126,9 +2126,12 @@ void c_test_twoSum2(void)
     free(res);
 }
 
+#include "gov_pip_moi.h"
+
 void c_test(void)
 {
     printf("%s start >>>\n", __FUNCTION__);
+    pip_moi_modify();
     printf("%s end <<<\n", __FUNCTION__);
 }
 
